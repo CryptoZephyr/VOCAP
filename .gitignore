@@ -1,0 +1,40 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.seed
+
+# Node and TypeScript output
+node_modules/
+dist/
+build/
+coverage/
+.nyc_output/
+*.tsbuildinfo
+
+# Cairo and Starknet build output
+target/
+.snfoundry_cache/
+*.sierra.json
+*.casm.json
+
+# Local databases and runtime data
+*.db
+*.sqlite
+*.sqlite3
+data/
+logs/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Local audit and temporary files
+cairo-auditor.*
+cairo-audit-*
+tmp/
+temp/
