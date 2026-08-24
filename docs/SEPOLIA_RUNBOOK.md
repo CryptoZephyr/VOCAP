@@ -23,6 +23,27 @@ All privacy components must come from a compatible release family. Record the ex
 5. A Sepolia RPC URL for the same network.
 6. The router and target addresses after deployment.
 
+## Current Sepolia deployment record
+
+Recorded 2026-08-24 from accepted Sepolia receipts. No private key or viewing key is stored here.
+
+- Network: `SN_SEPOLIA`
+- Deployer account: `0x05561fc8b083db47a4e2c537b609febe82563d2e3a77a0589c9be559e61ad369`
+- Deployer class hash: `0x3957f9f5a1cbfe918cedc2015c85200ca51a5f7506ecb6de98a5207b759bf8a`
+- Privacy pool: `0x0254a6b2997ef52e9f830ce1f543f6b29768295e8d17e2267d672c552cfe0d91`
+- Router class hash: `0x05523f610ef12898912e00188bec88cf7e8080506d93360d17a20cb1c775bd78`
+  - declaration: `0x070c2c918267a2f77acc223897527cb1712da55bda85c1c567f15fcb641e4936`
+  - deployment: `0x02ec4ff4f016df419bb9a3a85aee8ee56b44c17a23ca85b74ec5e5b3befafa2c`
+  - address: `0x0356db61e1d7eaa0417312307c128017e6cc1a85a5a8a649d5c23fee17312b2b`
+- Approved target class hash: `0x07d637107437a81f099e7dd761fbd812059882fca8e62031a5979d6932f80a2f`
+  - declaration: `0x074ece253e0fcc293c5072d645b83a6be68c3a7317840f3b4e0313ccf9e2abbd`
+  - deployment: `0x03494a32d0f9bf285d3e89551cabafd148f612954d747ff2b57a64aef81458e7`
+  - address: `0x0499995a27c1e1ad2d53ecf81649e99f8421e50383f144816809058496034c66`
+- Policy `1`: Sepolia STRK `0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d`, amount `1000000000000000000`, target `premium_action`, RETURN mode, enabled.
+  - creation: `0x039b4782c6c0be8c596590ec036b43108c34244c4b54cc35e657575b0621079b`
+
+The router and target constructor state, policy state, class hashes, and transaction receipts were read back from Sepolia. This record proves deployment and policy configuration. It does not prove the STRK20 private withdrawal, router invocation, private return note, succession, or backend indexing sequence.
+
 The current upstream SDK source exports `createPrivateTransfers`, `ProvingServiceProofProvider`, and `IndexerDiscoveryProvider`. The SDK requires a wallet signer and viewing key. Those values stay in the wallet process and are never placed in the backend, repository, or agent prompt.
 
 ## Private RETURN flow
