@@ -2,35 +2,55 @@
 
 VOCAP is a private programmable-capability protocol for Starknet.
 
-The V1 contract and backend objective is a reusable `RETURN` flow:
+V1 requires a real STRK20 asset before a protected target action can execute. After a successful action, the same asset returns to a fresh private note for reuse.
 
 ```text
 private STRK20 capability
--> VocapRouter
+-> pool-gated VocapRouter
 -> configured target action
 -> same capability returned to a fresh private note
 ```
 
-The repository is currently private and local. No public remote or deployment is configured.
+## Current status
 
-## Current implementation gate
+VOCAP is being developed for the STRK20 Private Sprint. The Cairo router and backend pass their local verification suites. Sepolia deployment and the complete STRK20 private flow are the next integration gates. Mainnet remains on hold until those gates, artifact review, and fee dry-runs pass.
 
-Contract and backend implementation starts only after the pinned Starknet and STRK20 toolchain is available and verified. The Windows environment requires WSL for Scarb and Starknet Foundry. The implementation must be proven locally and on Sepolia before any mainnet action.
+V1 is `RETURN` only. The frontend is intentionally out of scope while the contracts, backend, indexing, and smoke flows are being stabilized.
 
-V1 remains `RETURN` only. The frontend is intentionally out of scope until the contract, backend, indexing, and smoke flows are stable.
+## Repository layout
 
-## Required verification
+- `contracts/` contains the RETURN-only pool-gated router and its security tests.
+- `backend/` contains typed policy and execution projection, PostgreSQL persistence, transaction lifecycle handling, and the STRK20 invoke-calldata boundary.
+- `docs/` contains the Sepolia runbook, toolchain notes, privacy boundaries, and hackathon release rules.
 
-The completed repository will provide reproducible equivalents of:
+## Verified local commands
+
+Run the Cairo checks inside WSL 2 Ubuntu:
 
 ```text
 scarb build
 snforge test
-npm run typecheck
-npm run test
-npm run build
-npm run smoke:local
-npm run smoke:network
 ```
 
+Run the backend checks from `backend/`:
+
+```text
+corepack pnpm typecheck
+corepack pnpm test
+corepack pnpm build
+```
+
+The Cairo auditor deterministic preflight reports zero findings for the production contracts. The complete private succession sequence remains a Sepolia and STRK20 integration gate.
+
+## Privacy boundaries
+
+STRK20 notes carry token and value. VOCAP gives that asset meaning through a public policy and a bound target function. Deposits and target execution boundaries remain public. The current holder and private note transfer can remain private through the STRK20 flow.
+
 No private keys, viewing keys, wallet recovery secrets, RPC credentials, or deployer secrets belong in this repository.
+
+The exact Sepolia gate and the two supported service deployment paths are documented in [docs/SEPOLIA_RUNBOOK.md](docs/SEPOLIA_RUNBOOK.md).
+The Starknet MCP setup and external signer boundary are documented in [docs/MCP_SETUP.md](docs/MCP_SETUP.md).
+
+## License
+
+MIT
