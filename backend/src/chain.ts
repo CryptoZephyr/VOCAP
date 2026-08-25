@@ -36,13 +36,28 @@ export class StarknetChainReader implements ChainReader {
       unknown
     >;
 
-    const rawReceipts = readArray(raw.receipts, "receipts");
-    return {
-      blockNumber: readNumber(raw.block_number, blockNumber),
-      blockHash: readString(raw.block_hash, "block_hash"),
-      receipts: rawReceipts.map(readReceipt),
-    };
+    return readBlockWithReceipts(raw, blockNumber);
   }
+}
+
+export function readBlockWithReceipts(value: unknown, fallbackBlockNumber: number): ChainBlock {
+  const raw = readRecord(value, "block");
+  const hasTopLevelReceipts = Array.isArray(raw.receipts);
+  const rawEntries = readArray(
+    hasTopLevelReceipts ? raw.receipts : raw.transactions,
+    hasTopLevelReceipts ? "receipts" : "transactions",
+  );
+
+  return {
+    blockNumber: readNumber(raw.block_number, fallbackBlockNumber),
+    blockHash: readString(raw.block_hash, "block_hash"),
+    receipts: rawEntries.map(readReceiptEntry),
+  };
+}
+
+function readReceiptEntry(value: unknown): ChainReceipt {
+  const raw = readRecord(value, "receipt entry");
+  return readReceipt(raw.receipt === undefined ? raw : raw.receipt);
 }
 
 function readReceipt(value: unknown): ChainReceipt {

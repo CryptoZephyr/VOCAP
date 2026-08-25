@@ -46,5 +46,5 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): BackendConfig 
 }
 
 export function normalizeAddress(value: string): string {
-  return value.toLowerCase();
+  return `0x${BigInt(value).toString(16)}`;
 }

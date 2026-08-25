@@ -41,6 +41,20 @@ describe("router event parser", () => {
       ),
     ).toBeNull();
   });
+
+  it("matches equivalent router addresses with different leading-zero widths", () => {
+    expect(
+      parseRouterEvent(
+        "0x0123",
+        event(
+          ROUTER_EVENT_SELECTORS.policyCreated,
+          ["0x1"],
+          ["0xabc", "0x2a", "0xdef", "0x1234"],
+          "0x123",
+        ),
+      ),
+    ).toMatchObject({ kind: "policy_created", policyId: "1" });
+  });
 });
 
 describe("router indexer", () => {

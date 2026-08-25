@@ -7,12 +7,10 @@ export interface RawRouterEvent {
   data: string[];
 }
 
-const eventNamespace = "vocap_contracts::vocap_router::VocapRouter";
-
 export const ROUTER_EVENT_SELECTORS = {
-  policyCreated: hash.getSelectorFromName(`${eventNamespace}::PolicyCreated`).toLowerCase(),
-  policyEnabled: hash.getSelectorFromName(`${eventNamespace}::PolicyEnabled`).toLowerCase(),
-  policyExecuted: hash.getSelectorFromName(`${eventNamespace}::PolicyExecuted`).toLowerCase(),
+  policyCreated: hash.getSelectorFromName("PolicyCreated").toLowerCase(),
+  policyEnabled: hash.getSelectorFromName("PolicyEnabled").toLowerCase(),
+  policyExecuted: hash.getSelectorFromName("PolicyExecuted").toLowerCase(),
 } as const;
 
 export type ParsedRouterEvent =
