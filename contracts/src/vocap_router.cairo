@@ -96,6 +96,7 @@ mod VocapRouter {
         pool: ContractAddress,
         next_policy_id: felt252,
         policies: Map<felt252, CapabilityPolicy>,
+        token_surplus: Map<ContractAddress, u256>,
         entered: bool,
     }
 
@@ -173,8 +174,10 @@ mod VocapRouter {
 
             let expected = u256 { low: policy.amount, high: 0 };
             let token_dispatcher = IERC20Dispatcher { contract_address: policy.token };
+            let prior_surplus = self.token_surplus.read(policy.token);
             let received_balance = token_dispatcher.balance_of(get_contract_address());
-            assert(received_balance == expected, errors::WRONG_AMOUNT);
+            assert(received_balance >= expected, errors::WRONG_AMOUNT);
+            assert(received_balance - expected >= prior_surplus, errors::WRONG_AMOUNT);
 
             assert(
                 token_dispatcher.approve(policy.target, expected),
@@ -191,7 +194,8 @@ mod VocapRouter {
             }
 
             let remaining_balance = token_dispatcher.balance_of(get_contract_address());
-            assert(remaining_balance == expected, errors::RETURN_FAILED);
+            assert(remaining_balance >= received_balance, errors::RETURN_FAILED);
+            self.token_surplus.entry(policy.token).write(remaining_balance - expected);
 
             assert(
                 token_dispatcher.approve(policy.target, u256 { low: 0, high: 0 }),

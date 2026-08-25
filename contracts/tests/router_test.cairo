@@ -361,7 +361,7 @@ fn test_direct_caller_bypass_rejected() {
         101,
         target,
         selector!("execute"),
-        array![].span(),
+        array![token.into(), 1, 0].span(),
     );
 }
 
@@ -407,15 +407,14 @@ fn test_wrong_amount_rejected() {
 }
 
 #[test]
-#[should_panic(expected: 'WRONG_AMOUNT')]
-fn test_unexpected_balance_rejected() {
+fn test_unexpected_balance_does_not_block_execution() {
     let token = deploy_erc20();
     let router_address = deploy_router(pool());
     let target = deploy_target(router_address);
     let policy_id = create_policy(router_address, token, 1, target, selector!("execute"));
     let token_dispatcher = IMockErc20Dispatcher { contract_address: token };
     token_dispatcher.mint(router_address, u256 { low: 2, high: 0 });
-    let _ = invoke(
+    let returned = invoke(
         router_address,
         pool(),
         policy_id,
@@ -424,7 +423,58 @@ fn test_unexpected_balance_rejected() {
         101,
         target,
         selector!("execute"),
-        array![].span(),
+        array![token.into(), 1, 0].span(),
+    );
+    assert(returned.len() == 1, 'surplus must not block return');
+    assert(*returned[0].amount == 1, 'wrong returned amount');
+    assert(
+        token_dispatcher.balance_of(router_address) == u256 { low: 2, high: 0 },
+        'surplus lost',
+    );
+    assert(
+        token_dispatcher.allowance(router_address, pool()) == u256 { low: 1, high: 0 },
+        'pool return allowance missing',
+    );
+}
+
+#[test]
+#[should_panic(expected: 'WRONG_AMOUNT')]
+fn test_stale_surplus_cannot_fund_next_invocation() {
+    let token = deploy_erc20();
+    let pool = deploy_pool();
+    let router_address = deploy_router(pool);
+    let target = deploy_target(router_address);
+    let policy_id = create_policy(router_address, token, 1, target, selector!("execute"));
+    let pool_dispatcher = IMockPoolDispatcher { contract_address: pool };
+    pool_dispatcher.set_config(router_address, policy_id, token, 1, 101);
+    let token_dispatcher = IMockErc20Dispatcher { contract_address: token };
+    token_dispatcher.mint(router_address, u256 { low: 2, high: 0 });
+
+    let _ = invoke(
+        router_address,
+        pool,
+        policy_id,
+        token,
+        1,
+        101,
+        target,
+        selector!("execute"),
+        array![token.into(), 1, 0].span(),
+    );
+    start_cheat_caller_address(token, pool);
+    token_dispatcher.transfer_from(router_address, pool, u256 { low: 1, high: 0 });
+    stop_cheat_caller_address(token);
+
+    let _ = invoke(
+        router_address,
+        pool,
+        policy_id,
+        token,
+        1,
+        102,
+        target,
+        selector!("execute"),
+        array![token.into(), 1, 0].span(),
     );
 }
 
@@ -524,6 +574,28 @@ fn test_target_cannot_retain_capability_asset() {
     let policy_id = create_policy(router_address, token, 1, target, selector!("execute"));
     let token_dispatcher = IMockErc20Dispatcher { contract_address: token };
     token_dispatcher.mint(router_address, u256 { low: 1, high: 0 });
+    let _ = invoke(
+        router_address,
+        pool(),
+        policy_id,
+        token,
+        1,
+        101,
+        target,
+        selector!("execute"),
+        array![token.into(), 1, 3].span(),
+    );
+}
+
+#[test]
+#[should_panic(expected: 'RETURN_FAILED')]
+fn test_target_cannot_retain_capability_asset_with_surplus() {
+    let token = deploy_erc20();
+    let router_address = deploy_router(pool());
+    let target = deploy_target(router_address);
+    let policy_id = create_policy(router_address, token, 1, target, selector!("execute"));
+    let token_dispatcher = IMockErc20Dispatcher { contract_address: token };
+    token_dispatcher.mint(router_address, u256 { low: 2, high: 0 });
     let _ = invoke(
         router_address,
         pool(),
