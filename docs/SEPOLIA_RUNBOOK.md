@@ -42,7 +42,37 @@ Recorded 2026-08-24 from accepted Sepolia receipts. No private key or viewing ke
 - Policy `1`: Sepolia STRK `0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d`, amount `1000000000000000000`, target `premium_action`, RETURN mode, enabled.
   - creation: `0x039b4782c6c0be8c596590ec036b43108c34244c4b54cc35e657575b0621079b`
 
-The router and target constructor state, policy state, class hashes, and transaction receipts were read back from Sepolia. This record proves deployment and policy configuration. It does not prove the STRK20 private withdrawal, router invocation, private return note, succession, or backend indexing sequence.
+The router and target constructor state, policy state, class hashes, and deployment receipts were read back from Sepolia. The live flow evidence below covers the remaining STRK20 private withdrawal, router invocation, return-note, succession, and backend indexing gates.
+
+## Live Sepolia evidence
+
+Recorded 2026-08-28 from accepted receipts using the pinned SDK `0.14.3-rc.5`, OHTTP-enabled proving and discovery, and the configured Sepolia RPC. No private key or viewing key is stored here.
+
+### RETURN and reuse
+
+- Registration: `0x287fcd0e816700efa47963ef38a09aab1a46938dee5ae7a1bf8b260bb2786e3`, `ACCEPTED_ON_L1`, block `14142561`.
+- Deposit: `0x4c31dc098a794afdeb5a821d6c84376d39efdee61b7003a8d6f69fe4e2adc37`, `ACCEPTED_ON_L1`, block `14142581`.
+- First router invocation: `0x3a079da763772ecb3f6bb95220dca64e87414b70ca4d3ac1a91aa7c4608c592`, `ACCEPTED_ON_L1`, block `14142600`.
+- Second invocation using the returned note: `0x7799dd35f6e80c337dbed04fc110ad956b60701229d3752ea844518a42aa583`, `ACCEPTED_ON_L1`, block `14142619`.
+- Discovery returned one open note after the first invocation, and the approved target action count increased by `2`.
+
+### Alice to Bob succession
+
+- A fresh disposable OpenZeppelin account was used for Alice and a second fresh account for Bob. Their public addresses were `0x3bd8800bcb9b2628b11d1533a4deb3bca34bb1d597b1af72a6e2bab6473eeb6` and `0x7723c51482f9b848103f16e06ed90cc02412a717945dbc872269beb70d8eb71`.
+- Alice registration: `0x696584be54b42711bd6a051ed0382815f834334a908dd43a3b5def6cf3a4840`, `SUCCEEDED/ACCEPTED_ON_L2`, block `14150404`.
+- Bob registration relayed by the configured account: `0x2838a864a1a18f392627155c5f380262c7f1eb8be7437458cfb4bbe4d33d082`, `SUCCEEDED/ACCEPTED_ON_L2`, block `14150423`.
+- Alice deposit: `0x2e574da3cb85b1bdeceeb5f5249458ab765808073e9de5a42d40d0b069ee62e`, `SUCCEEDED/ACCEPTED_ON_L2`, block `14150447`.
+- Alice to Bob private transfer: `0x2dcc3a79f18e4b7e40bea049559a85f9d581e6e3cb71e5ecec7640b04a2fa3e`, `SUCCEEDED/ACCEPTED_ON_L2`, block `14150468`. Alice's original note disappeared from discovery and Bob's fresh note was discovered.
+- Reusing Alice's original note was rejected by the prover before submission.
+- Bob withdrawal: `0x487234e325bbe3b6f46dbc7015363c2e39608b08bb27f7957e86ad094602406`, `SUCCEEDED/ACCEPTED_ON_L2`, block `14150491`. Bob's STRK balance increased by exactly `1000000000000000000` wei, and the Bob note disappeared from discovery.
+
+The succession receipts were accepted on L2 when this record was written. The earlier RETURN and reuse receipts reached L1 finality. L1 batch finality for the newer succession receipts is a separate settlement-status check.
+
+### Backend projection
+
+- The indexer processed blocks `14142560` through `14143059` with `2` router executions.
+- PostgreSQL stored exactly `2` accepted execution rows for the normalized router address and a cursor of `14143060`.
+- Reapplying the two live execution blocks left the execution count at `2` and the cursor unchanged, proving the production idempotence path.
 
 The current upstream SDK source exports `createPrivateTransfers`, `ProvingServiceProofProvider`, and `IndexerDiscoveryProvider`. The SDK requires a wallet signer and viewing key. Those values stay in the wallet process and are never placed in the backend, repository, or agent prompt.
 

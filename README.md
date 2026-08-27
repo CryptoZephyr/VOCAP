@@ -13,7 +13,7 @@ private STRK20 capability
 
 ## Current status
 
-VOCAP is being developed for the STRK20 Private Sprint. The Cairo router and backend pass their local verification suites, and the router, approved target, and first STRK policy are deployed on Sepolia. The complete STRK20 private flow is the next integration gate. Mainnet remains on hold until that gate, artifact review, backend release checks, and fee dry-runs pass.
+VOCAP is being developed for the STRK20 Private Sprint. The Cairo router and backend pass their local verification suites, and the router, approved target, and first STRK policy are deployed on Sepolia. The complete STRK20 RETURN and Alice-to-Bob succession flow has now passed on Sepolia with the backend projection evidence recorded in [docs/SEPOLIA_RUNBOOK.md](docs/SEPOLIA_RUNBOOK.md). Mainnet remains on hold until the remaining artifact review, operational, privacy-service, wallet, and fee gates pass.
 
 V1 is `RETURN` only. The frontend is intentionally out of scope while the contracts, backend, indexing, and smoke flows are being stabilized.
 
@@ -40,7 +40,7 @@ corepack pnpm test
 corepack pnpm build
 ```
 
-The Cairo auditor deterministic preflight reports zero findings for the production contracts. The complete private succession sequence remains a Sepolia and STRK20 integration gate.
+The Cairo auditor deterministic preflight reports zero findings for the production contracts. The Sepolia STRK20 integration gate is recorded as complete. Mainnet deployment and funding remain intentionally out of scope until the tracked readiness checklist is closed.
 
 ## Privacy boundaries
 

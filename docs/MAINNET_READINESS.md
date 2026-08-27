@@ -19,19 +19,20 @@ This document is the tracked release checklist for the VOCAP Mainnet path. It re
 
 ## Verification snapshot
 
-Recorded 2026-08-27 from the final working tree:
+Recorded 2026-08-28 from the final working tree:
 
 - `scarb build` and `snforge test`: 26 passed.
 - Backend typecheck and build: passed. The default Vitest run: 31 passed, 1 skipped because the PostgreSQL test is guarded when no test database URL is configured.
 - `DATABASE_URL=<migration-role-url> corepack pnpm migrate`: completed successfully against the disposable PostgreSQL database and can be rerun idempotently.
 - Explicit `corepack pnpm test:postgres`: 1 test passed against a disposable PostgreSQL database. The test covered migration, idempotent replay, router-scoped cursors, lifecycle observation, and reorganization rejection.
+- Live Sepolia RETURN, reuse, succession, stale-note rejection, and backend projection evidence is recorded in [SEPOLIA_RUNBOOK.md](SEPOLIA_RUNBOOK.md). The RETURN receipts reached L1 finality. The newer succession receipts were successful and accepted on L2 when recorded.
 - No Mainnet funding, deployment, or private transaction was attempted.
 
 The production sequence is: provision the migration role as the database or schema owner, run the migration job once, grant the runtime role `USAGE` plus application DML on the `vocap_*` tables, then start the indexer with only the runtime URL.
 
 ## External gates
 
-- [ ] Complete the real Sepolia STRK20 RETURN and succession sequence with final receipts, pool note evidence, and backend indexing evidence. The current Sepolia record proves deployment and policy configuration only.
+- [x] Complete the real Sepolia STRK20 RETURN and succession sequence with receipt, pool note, stale-note rejection, and backend indexing evidence. See [SEPOLIA_RUNBOOK.md](SEPOLIA_RUNBOOK.md) for the transaction record and the remaining L1 settlement-status follow-up for the newer succession receipts.
 - [ ] Verify the exact Mainnet privacy-pool address, class hash, version, fee, and action ordering against the selected SDK release, including pool-side enforcement of the withdrawal boundary.
 - [ ] Confirm the frozen V1 target accepts only the intended no-argument call shape, or add and redeploy an explicit target-calldata restriction before expanding the target surface.
 - [ ] Verify the proving and discovery service revisions or image digests against the selected SDK release.
