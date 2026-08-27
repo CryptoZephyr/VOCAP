@@ -2,6 +2,7 @@ use snforge_std::{
     declare, start_cheat_caller_address, stop_cheat_caller_address, ContractClassTrait,
     DeclareResultTrait,
 };
+use core::num::traits::Zero;
 use starknet::{contract_address_const, ContractAddress};
 use vocap_contracts::{
     CapabilityPolicy, IVocapRouterDispatcher, IVocapRouterDispatcherTrait, LifecycleMode,
@@ -249,10 +250,18 @@ fn deploy_pool() -> ContractAddress {
     address
 }
 
-fn deploy_router(pool: ContractAddress) -> ContractAddress {
+fn deploy_router_with(
+    owner_address: ContractAddress, pool_address: ContractAddress,
+) -> ContractAddress {
     let contract = declare("VocapRouter").unwrap().contract_class();
-    let (address, _) = contract.deploy(@array![owner().into(), pool.into()]).unwrap();
+    let (address, _) = contract
+        .deploy(@array![owner_address.into(), pool_address.into()])
+        .unwrap();
     address
+}
+
+fn deploy_router(pool_address: ContractAddress) -> ContractAddress {
+    deploy_router_with(owner(), pool_address)
 }
 
 fn create_policy(
@@ -346,6 +355,97 @@ fn test_create_policy_and_reusable_return() {
 }
 
 #[test]
+fn test_router_constructor_rejects_zero_owner() {
+    let contract = declare("VocapRouter").unwrap().contract_class();
+    let result = contract.deploy(@array![0, pool().into()]);
+    match result {
+        Result::Ok(_) => panic(array!['ZERO_OWNER_ACCEPTED']),
+        Result::Err(_) => {}
+    }
+}
+
+#[test]
+fn test_router_constructor_rejects_zero_pool() {
+    let contract = declare("VocapRouter").unwrap().contract_class();
+    let result = contract.deploy(@array![owner().into(), 0]);
+    match result {
+        Result::Ok(_) => panic(array!['ZERO_POOL_ACCEPTED']),
+        Result::Err(_) => {}
+    }
+}
+
+#[test]
+#[should_panic(expected: "ONLY_OWNER")]
+fn test_create_policy_rejects_non_owner() {
+    let token = deploy_erc20();
+    let router_address = deploy_router(pool());
+    let target = deploy_target(router_address);
+    let router = IVocapRouterDispatcher { contract_address: router_address };
+
+    start_cheat_caller_address(router_address, user());
+    router.create_policy(token, 1, target, selector!("execute"));
+}
+
+#[test]
+#[should_panic(expected: "ONLY_OWNER")]
+fn test_set_policy_enabled_rejects_non_owner() {
+    let token = deploy_erc20();
+    let router_address = deploy_router(pool());
+    let target = deploy_target(router_address);
+    let policy_id = create_policy(router_address, token, 1, target, selector!("execute"));
+    let router = IVocapRouterDispatcher { contract_address: router_address };
+
+    start_cheat_caller_address(router_address, user());
+    router.set_policy_enabled(policy_id, false);
+}
+
+#[test]
+#[should_panic(expected: ('INVALID_TOKEN', 'ENTRYPOINT_FAILED'))]
+fn test_create_policy_rejects_zero_token() {
+    let router_address = deploy_router(pool());
+    let target = deploy_target(router_address);
+    let router = IVocapRouterDispatcher { contract_address: router_address };
+
+    start_cheat_caller_address(router_address, owner());
+    router.create_policy(Zero::zero(), 1, target, selector!("execute"));
+}
+
+#[test]
+#[should_panic(expected: ('INVALID_AMOUNT', 'ENTRYPOINT_FAILED'))]
+fn test_create_policy_rejects_zero_amount() {
+    let token = deploy_erc20();
+    let router_address = deploy_router(pool());
+    let target = deploy_target(router_address);
+    let router = IVocapRouterDispatcher { contract_address: router_address };
+
+    start_cheat_caller_address(router_address, owner());
+    router.create_policy(token, 0, target, selector!("execute"));
+}
+
+#[test]
+#[should_panic(expected: ('INVALID_TARGET', 'ENTRYPOINT_FAILED'))]
+fn test_create_policy_rejects_zero_target() {
+    let token = deploy_erc20();
+    let router_address = deploy_router(pool());
+    let router = IVocapRouterDispatcher { contract_address: router_address };
+
+    start_cheat_caller_address(router_address, owner());
+    router.create_policy(token, 1, Zero::zero(), selector!("execute"));
+}
+
+#[test]
+#[should_panic(expected: ('INVALID_SELECTOR', 'ENTRYPOINT_FAILED'))]
+fn test_create_policy_rejects_zero_selector() {
+    let token = deploy_erc20();
+    let router_address = deploy_router(pool());
+    let target = deploy_target(router_address);
+    let router = IVocapRouterDispatcher { contract_address: router_address };
+
+    start_cheat_caller_address(router_address, owner());
+    router.create_policy(token, 1, target, 0);
+}
+
+#[test]
 #[should_panic(expected: "ONLY_POOL")]
 fn test_direct_caller_bypass_rejected() {
     let token = deploy_erc20();
@@ -400,6 +500,26 @@ fn test_wrong_amount_rejected() {
         token,
         2,
         101,
+        target,
+        selector!("execute"),
+        array![].span(),
+    );
+}
+
+#[test]
+#[should_panic(expected: ('INVALID_NOTE', 'ENTRYPOINT_FAILED'))]
+fn test_zero_note_rejected() {
+    let token = deploy_erc20();
+    let router_address = deploy_router(pool());
+    let target = deploy_target(router_address);
+    let policy_id = create_policy(router_address, token, 1, target, selector!("execute"));
+    let _ = invoke(
+        router_address,
+        pool(),
+        policy_id,
+        token,
+        1,
+        0,
         target,
         selector!("execute"),
         array![].span(),

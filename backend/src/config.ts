@@ -1,17 +1,43 @@
 import { z } from "zod";
 import type { Network } from "./types.js";
 
-const address = z.string().regex(/^0x[0-9a-fA-F]+$/, "expected a hexadecimal Starknet address");
+const address = z
+  .string()
+  .regex(/^0x[0-9a-fA-F]+$/, "expected a hexadecimal Starknet address")
+  .refine(
+    (value) => {
+      try {
+        const numeric = BigInt(value);
+        return numeric > 0n && numeric < (1n << 251n);
+      } catch {
+        return false;
+      }
+    },
+    "expected a non-zero 251-bit Starknet address",
+  );
 
-const configSchema = z.object({
-  STARKNET_RPC_URL: z.string().url(),
-  STARKNET_NETWORK: z.enum(["sepolia", "mainnet", "devnet"]).default("sepolia"),
-  VOCAP_ROUTER_ADDRESS: address,
-  DATABASE_URL: z.string().min(1),
-  VOCAP_START_BLOCK: z.coerce.number().int().min(0).default(0),
-  VOCAP_SYNC_CHUNK_SIZE: z.coerce.number().int().positive().max(500).default(25),
-  VOCAP_POLL_MS: z.coerce.number().int().positive().default(15_000),
-});
+const configSchema = z
+  .object({
+    STARKNET_RPC_URL: z.string().url(),
+    STARKNET_NETWORK: z.enum(["sepolia", "mainnet", "devnet"]),
+    VOCAP_ROUTER_ADDRESS: address,
+    DATABASE_URL: z.string().min(1),
+    VOCAP_START_BLOCK: z.coerce.number().int().min(0).default(0),
+    VOCAP_SYNC_CHUNK_SIZE: z.coerce.number().int().positive().max(500).default(25),
+    VOCAP_POLL_MS: z.coerce.number().int().positive().default(15_000),
+  })
+  .superRefine((value, context) => {
+    if (
+      value.STARKNET_NETWORK !== "devnet" &&
+      new URL(value.STARKNET_RPC_URL).protocol !== "https:"
+    ) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["STARKNET_RPC_URL"],
+        message: "HTTPS is required for Sepolia and Mainnet RPC URLs",
+      });
+    }
+  });
 
 export interface BackendConfig {
   rpcUrl: string;

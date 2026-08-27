@@ -56,14 +56,21 @@ export interface BlockProjection {
   routerAddress: string;
   blockNumber: number;
   blockHash: string;
+  parentHash?: string;
   policies: PolicyProjection[];
   policyEnabled: PolicyEnabledProjection[];
   executions: ExecutionProjection[];
 }
 
+export interface SyncCursor {
+  nextBlock: number;
+  blockHash: string | null;
+}
+
 export interface VocapStore {
   migrate(): Promise<void>;
-  getCursor(network: Network, startBlock: number): Promise<number>;
+  getCursor(network: Network, routerAddress: string, startBlock: number): Promise<number>;
+  getCursorState(network: Network, routerAddress: string, startBlock: number): Promise<SyncCursor>;
   applyBlock(projection: BlockProjection): Promise<void>;
   registerTransaction(network: Network, txHash: string, kind: TransactionKind): Promise<void>;
   updateTransactionStatus(
@@ -71,5 +78,6 @@ export interface VocapStore {
     txHash: string,
     status: TransactionStatus,
   ): Promise<void>;
+  observeReceipt(network: Network, txHash: string, status: TransactionStatus): Promise<void>;
   close(): Promise<void>;
 }

@@ -18,9 +18,18 @@ describe("transaction lifecycle", () => {
     expect(receiptStatus({ execution_status: "REVERTED", finality_status: "ACCEPTED_ON_L2" })).toBe(
       "reverted",
     );
+    expect(() => receiptStatus({ execution_status: "REVERTED" })).toThrow(
+      "not finalized successfully",
+    );
     expect(receiptStatus({ finality_status: "REJECTED" })).toBe("rejected");
     expect(receiptStatus({ execution_status: "SUCCEEDED", finality_status: "ACCEPTED_ON_L2" })).toBe(
       "accepted",
+    );
+    expect(
+      receiptStatus({ executionStatus: "SUCCEEDED", finalityStatus: "ACCEPTED_ON_L1" }),
+    ).toBe("accepted");
+    expect(() => receiptStatus({ execution_status: "SUCCEEDED" })).toThrow(
+      "not finalized successfully",
     );
   });
 

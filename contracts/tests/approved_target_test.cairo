@@ -30,6 +30,16 @@ fn test_constructor_and_router_state() {
 }
 
 #[test]
+fn test_constructor_rejects_zero_router() {
+    let contract = declare("VocapApprovedTarget").unwrap().contract_class();
+    let result = contract.deploy(@array![0]);
+    match result {
+        Result::Ok(_) => panic(array!['ZERO_ROUTER_ACCEPTED']),
+        Result::Err(_) => {}
+    }
+}
+
+#[test]
 // The dispatcher preserves ONLY_ROUTER in the nested panic data and exposes
 // ENTRYPOINT_FAILED as the outer syscall failure.
 #[should_panic(expected: ("ONLY_ROUTER", 'ENTRYPOINT_FAILED'))]

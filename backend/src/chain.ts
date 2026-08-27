@@ -1,5 +1,6 @@
 import { RpcProvider } from "starknet";
 import type { RawRouterEvent } from "./events.js";
+import type { Network } from "./types.js";
 
 export interface ChainReceipt {
   transactionHash: string;
@@ -11,6 +12,7 @@ export interface ChainReceipt {
 export interface ChainBlock {
   blockNumber: number;
   blockHash: string;
+  parentHash?: string;
   receipts: ChainReceipt[];
 }
 
@@ -21,27 +23,72 @@ export interface ChainReader {
 
 export class StarknetChainReader implements ChainReader {
   private readonly provider: RpcProvider;
+  private readonly retries: number;
+  private readonly retryDelayMs: number;
 
-  public constructor(rpcUrl: string) {
+  public constructor(rpcUrl: string, options: { retries?: number; retryDelayMs?: number } = {}) {
     this.provider = new RpcProvider({ nodeUrl: rpcUrl, batch: 0 });
+    this.retries = options.retries ?? 3;
+    this.retryDelayMs = options.retryDelayMs ?? 250;
   }
 
   public getLatestBlockNumber(): Promise<number> {
-    return this.provider.getBlockNumber();
+    return this.withRetry(() => this.provider.getBlockNumber());
+  }
+
+  public async verifyNetwork(network: Network): Promise<void> {
+    const chainId = await this.withRetry(() =>
+      (this.provider as unknown as { getChainId: () => Promise<string> }).getChainId(),
+    );
+    assertChainIdentity(network, chainId);
   }
 
   public async getBlockWithReceipts(blockNumber: number): Promise<ChainBlock> {
-    const raw = (await this.provider.getBlockWithReceipts(blockNumber)) as unknown as Record<
+    const raw = (await this.withRetry(() => this.provider.getBlockWithReceipts(blockNumber))) as unknown as Record<
       string,
       unknown
     >;
 
     return readBlockWithReceipts(raw, blockNumber);
   }
+
+  private async withRetry<T>(operation: () => Promise<T>): Promise<T> {
+    let lastError: unknown;
+    for (let attempt = 0; attempt <= this.retries; attempt += 1) {
+      try {
+        return await operation();
+      } catch (error) {
+        lastError = error;
+        if (attempt === this.retries) break;
+        await delay(this.retryDelayMs * 2 ** attempt);
+      }
+    }
+    throw lastError instanceof Error ? lastError : new Error(String(lastError));
+  }
+}
+
+const expectedChainIds: Record<Network, readonly string[]> = {
+  mainnet: ["SN_MAIN", "0X534E5F4D41494E"],
+  sepolia: ["SN_SEPOLIA", "0X534E5F5345504F4C4941"],
+  devnet: ["SN_DEVNET", "0X534E5F4445564E4554", "SN_GOERLI", "0X534E5F474F45524C49"],
+};
+
+export function assertChainIdentity(network: Network, chainId: string): void {
+  const expected = expectedChainIds[network];
+  if (!expected.includes(chainId.toUpperCase())) {
+    throw new Error(`RPC chain identity mismatch: configured ${network}, received ${chainId}`);
+  }
+}
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
 export function readBlockWithReceipts(value: unknown, fallbackBlockNumber: number): ChainBlock {
   const raw = readRecord(value, "block");
+  if (raw.block_number === undefined) {
+    throw new Error("invalid block_number response");
+  }
   const hasTopLevelReceipts = Array.isArray(raw.receipts);
   const rawEntries = readArray(
     hasTopLevelReceipts ? raw.receipts : raw.transactions,
@@ -51,6 +98,7 @@ export function readBlockWithReceipts(value: unknown, fallbackBlockNumber: numbe
   return {
     blockNumber: readNumber(raw.block_number, fallbackBlockNumber),
     blockHash: readString(raw.block_hash, "block_hash"),
+    ...(typeof raw.parent_hash === "string" ? { parentHash: raw.parent_hash } : {}),
     receipts: rawEntries.map(readReceiptEntry),
   };
 }
@@ -108,7 +156,11 @@ function readOptionalString(value: unknown): string | undefined {
 }
 
 function readNumber(value: unknown, fallback: number): number {
-  return typeof value === "number" ? value : fallback;
+  if (value === undefined) return fallback;
+  if (typeof value !== "number" || !Number.isInteger(value) || value < 0) {
+    throw new Error("invalid block_number response");
+  }
+  return value;
 }
 
 function readStringArray(value: unknown, label: string): string[] {

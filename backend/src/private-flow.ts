@@ -9,7 +9,7 @@ export interface VocapOpenNoteContext {
 export interface VocapWithdrawalContext {
   recipient: BigNumberish;
   token: BigNumberish;
-  amount: bigint;
+  amount: BigNumberish;
 }
 
 export interface VocapInvokeContext {
@@ -38,6 +38,7 @@ export interface VocapPrivacyInvokeInput {
 export function buildVocapPrivacyInvokeCalldata(
   input: VocapPrivacyInvokeInput,
 ): string[] {
+  validateInvokeInput(input);
   const targetCalldata = [...(input.targetCalldata ?? [])];
   return CallData.compile([
     input.policyId,
@@ -68,6 +69,8 @@ export function buildVocapPrivacyInvokeCall(
 export function createVocapInvokeCallBuilder(
   input: Omit<VocapPrivacyInvokeInput, "noteId">,
 ): (context: VocapInvokeContext) => CallDetails {
+  validateInvokeInput({ ...input, noteId: 1n });
+
   return ({ openNotes, withdrawals }) => {
     if (withdrawals.length !== 1) {
       throw new Error("VOCAP_PRIVATE_FLOW_REQUIRES_ONE_WITHDRAWAL");
@@ -88,11 +91,14 @@ export function createVocapInvokeCallBuilder(
     if (toBigInt(withdrawal.token) !== toBigInt(input.tokenAddress)) {
       throw new Error("VOCAP_WITHDRAWAL_TOKEN_MISMATCH");
     }
-    if (withdrawal.amount !== input.amount) {
+    if (toBigInt(withdrawal.amount) !== input.amount) {
       throw new Error("VOCAP_WITHDRAWAL_AMOUNT_MISMATCH");
     }
     if (toBigInt(openNote.token) !== toBigInt(input.tokenAddress)) {
       throw new Error("VOCAP_OPEN_NOTE_TOKEN_MISMATCH");
+    }
+    if (toBigInt(openNote.noteId) === 0n) {
+      throw new Error("VOCAP_OPEN_NOTE_ID_MISMATCH");
     }
 
     return buildVocapPrivacyInvokeCall({
@@ -104,4 +110,28 @@ export function createVocapInvokeCallBuilder(
 
 function toBigInt(value: BigNumberish): bigint {
   return BigInt(String(value));
+}
+
+function validateInvokeInput(input: VocapPrivacyInvokeInput): void {
+  if (toBigInt(input.routerAddress) === 0n) {
+    throw new Error("VOCAP_ROUTER_ADDRESS_REQUIRED");
+  }
+  if (toBigInt(input.policyId) === 0n) {
+    throw new Error("VOCAP_POLICY_ID_REQUIRED");
+  }
+  if (toBigInt(input.tokenAddress) === 0n) {
+    throw new Error("VOCAP_TOKEN_ADDRESS_REQUIRED");
+  }
+  if (toBigInt(input.amount) <= 0n) {
+    throw new Error("VOCAP_AMOUNT_REQUIRED");
+  }
+  if (toBigInt(input.targetAddress) === 0n) {
+    throw new Error("VOCAP_TARGET_ADDRESS_REQUIRED");
+  }
+  if (toBigInt(input.selector) === 0n) {
+    throw new Error("VOCAP_SELECTOR_REQUIRED");
+  }
+  if (toBigInt(input.noteId) === 0n) {
+    throw new Error("VOCAP_NOTE_ID_REQUIRED");
+  }
 }

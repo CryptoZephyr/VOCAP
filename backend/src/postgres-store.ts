@@ -8,6 +8,7 @@ import type {
   PolicyProjection,
   TransactionKind,
   TransactionStatus,
+  SyncCursor,
   VocapStore,
 } from "./types.js";
 import { assertTransactionTransition } from "./transaction-state.js";
@@ -19,36 +20,113 @@ export class PostgresStore implements VocapStore {
     await this.pool.query(await loadMigrationSql());
   }
 
-  public async getCursor(network: Network, startBlock: number): Promise<number> {
-    const result = await this.pool.query<{ next_block: string }>(
+  public async getCursor(network: Network, routerAddress: string, startBlock: number): Promise<number>;
+  public async getCursor(network: Network, startBlock: number): Promise<number>;
+  public async getCursor(
+    network: Network,
+    routerAddressOrStartBlock: string | number,
+    maybeStartBlock?: number,
+  ): Promise<number> {
+    const routerAddress = typeof routerAddressOrStartBlock === "string" ? routerAddressOrStartBlock : "__legacy__";
+    const startBlock = typeof routerAddressOrStartBlock === "number" ? routerAddressOrStartBlock : maybeStartBlock;
+    if (startBlock === undefined) throw new Error("start block is required");
+    return (await this.getCursorState(network, routerAddress, startBlock)).nextBlock;
+  }
+
+  public async getCursorState(
+    network: Network,
+    routerAddress: string,
+    startBlock: number,
+  ): Promise<SyncCursor> {
+    const result = await this.pool.query<{ next_block: string; block_hash: string | null }>(
       `
-        INSERT INTO vocap_sync_cursors (network, next_block)
-        VALUES ($1, $2)
-        ON CONFLICT (network) DO NOTHING
-        RETURNING next_block
+        INSERT INTO vocap_sync_cursors (network, router_address, next_block)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (network, router_address) DO NOTHING
+        RETURNING next_block, block_hash
       `,
-      [network, startBlock],
+      [network, routerAddress, startBlock],
     );
 
     if (result.rows[0]) {
-      return Number(result.rows[0].next_block);
+      return {
+        nextBlock: Number(result.rows[0].next_block),
+        blockHash: result.rows[0].block_hash,
+      };
     }
 
-    const existing = await this.pool.query<{ next_block: string }>(
-      "SELECT next_block FROM vocap_sync_cursors WHERE network = $1",
-      [network],
+    const existing = await this.pool.query<{ next_block: string; block_hash: string | null }>(
+      "SELECT next_block, block_hash FROM vocap_sync_cursors WHERE network = $1 AND router_address = $2",
+      [network, routerAddress],
     );
-    const cursor = existing.rows[0]?.next_block;
+    const cursor = existing.rows[0];
     if (cursor === undefined) {
-      throw new Error(`sync cursor disappeared for network ${network}`);
+      throw new Error(`sync cursor disappeared for ${network}:${routerAddress}`);
     }
-    return Number(cursor);
+    return {
+      nextBlock: Number(cursor.next_block),
+      blockHash: cursor.block_hash,
+    };
   }
 
   public async applyBlock(projection: BlockProjection): Promise<void> {
     const client = await this.pool.connect();
     try {
       await client.query("BEGIN");
+      await client.query(
+        `
+          INSERT INTO vocap_sync_cursors (network, router_address, next_block)
+          VALUES ($1, $2, $3)
+          ON CONFLICT (network, router_address) DO NOTHING
+        `,
+        [projection.network, projection.routerAddress, projection.blockNumber],
+      );
+      const cursorResult = await client.query<{ next_block: string; block_hash: string | null }>(
+        `
+          SELECT next_block, block_hash
+          FROM vocap_sync_cursors
+          WHERE network = $1 AND router_address = $2
+          FOR UPDATE
+        `,
+        [projection.network, projection.routerAddress],
+      );
+      const cursor = cursorResult.rows[0];
+      if (!cursor) throw new Error("sync cursor disappeared during block application");
+
+      if (Number(cursor.next_block) > projection.blockNumber) {
+        const indexed = await client.query<{ block_hash: string }>(
+          `
+            SELECT block_hash FROM vocap_indexed_blocks
+            WHERE network = $1 AND router_address = $2 AND block_number = $3
+          `,
+          [projection.network, projection.routerAddress, projection.blockNumber],
+        );
+        if (indexed.rows[0]?.block_hash?.toLowerCase() === projection.blockHash.toLowerCase()) {
+          await client.query("COMMIT");
+          return;
+        }
+        throw new Error(
+          `chain reorganization detected at ${projection.network}:${projection.routerAddress}:${projection.blockNumber}`,
+        );
+      }
+      if (Number(cursor.next_block) !== projection.blockNumber) {
+        throw new Error(
+          `unexpected block ${projection.blockNumber}, expected ${cursor.next_block}`,
+        );
+      }
+      if (cursor.block_hash !== null && projection.parentHash === undefined) {
+        throw new Error(
+          `missing parent hash before ${projection.network}:${projection.routerAddress}:${projection.blockNumber}`,
+        );
+      }
+      if (
+        cursor.block_hash !== null &&
+        cursor.block_hash.toLowerCase() !== projection.parentHash!.toLowerCase()
+      ) {
+        throw new Error(
+          `chain reorganization detected before ${projection.network}:${projection.routerAddress}:${projection.blockNumber}`,
+        );
+      }
       for (const policy of projection.policies) {
         await upsertPolicy(client, policy);
       }
@@ -60,13 +138,31 @@ export class PostgresStore implements VocapStore {
       }
       await client.query(
         `
-          INSERT INTO vocap_sync_cursors (network, next_block)
-          VALUES ($1, $2)
-          ON CONFLICT (network) DO UPDATE
-          SET next_block = GREATEST(vocap_sync_cursors.next_block, EXCLUDED.next_block),
-              updated_at = now()
+          INSERT INTO vocap_indexed_blocks (
+            network, router_address, block_number, block_hash, parent_hash
+          )
+          VALUES ($1, $2, $3, $4, $5)
         `,
-        [projection.network, projection.blockNumber + 1],
+        [
+          projection.network,
+          projection.routerAddress,
+          projection.blockNumber,
+          projection.blockHash,
+          projection.parentHash ?? null,
+        ],
+      );
+      await client.query(
+        `
+          UPDATE vocap_sync_cursors
+          SET next_block = $3, block_hash = $4, updated_at = now()
+          WHERE network = $1 AND router_address = $2
+        `,
+        [
+          projection.network,
+          projection.routerAddress,
+          projection.blockNumber + 1,
+          projection.blockHash,
+        ],
       );
       await client.query("COMMIT");
     } catch (error) {
@@ -97,21 +193,40 @@ export class PostgresStore implements VocapStore {
     txHash: string,
     status: TransactionStatus,
   ): Promise<void> {
-    const current = await this.pool.query<{ status: TransactionStatus }>(
+    const updated = await this.pool.query(
+      `
+        UPDATE vocap_transactions
+        SET status = $3,
+            confirmed_at = CASE WHEN $3 = 'pending' THEN confirmed_at ELSE COALESCE(confirmed_at, now()) END
+        WHERE network = $1 AND tx_hash = $2
+          AND (status = $3 OR (status = 'pending' AND $3 IN ('accepted', 'rejected', 'reverted')))
+      `,
+      [network, txHash, status],
+    );
+    if (updated.rowCount === 1) return;
+
+    const existing = await this.pool.query<{ status: TransactionStatus }>(
       "SELECT status FROM vocap_transactions WHERE network = $1 AND tx_hash = $2",
       [network, txHash],
     );
-    const existing = current.rows[0]?.status;
-    if (!existing) {
-      throw new Error(`transaction ${txHash} was not registered`);
-    }
-    assertTransactionTransition(existing, status);
+    const current = existing.rows[0]?.status;
+    if (!current) throw new Error(`transaction ${txHash} was not registered`);
+    assertTransactionTransition(current, status);
+    throw new Error(`transaction ${txHash} status update raced with another writer`);
+  }
+
+  public async observeReceipt(
+    network: Network,
+    txHash: string,
+    status: TransactionStatus,
+  ): Promise<void> {
     await this.pool.query(
       `
         UPDATE vocap_transactions
         SET status = $3,
             confirmed_at = CASE WHEN $3 = 'pending' THEN confirmed_at ELSE COALESCE(confirmed_at, now()) END
         WHERE network = $1 AND tx_hash = $2
+          AND (status = $3 OR (status = 'pending' AND $3 IN ('accepted', 'rejected', 'reverted')))
       `,
       [network, txHash, status],
     );

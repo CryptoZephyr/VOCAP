@@ -66,6 +66,8 @@ describe("router indexer", () => {
         receipts: [
           {
             transactionHash: "0xcreate",
+            executionStatus: "SUCCEEDED",
+            finalityStatus: "ACCEPTED_ON_L2",
             events: [
               event(
                 ROUTER_EVENT_SELECTORS.policyCreated,
@@ -76,6 +78,8 @@ describe("router indexer", () => {
           },
           {
             transactionHash: "0xexecute",
+            executionStatus: "SUCCEEDED",
+            finalityStatus: "ACCEPTED_ON_L2",
             events: [
               event(
                 ROUTER_EVENT_SELECTORS.policyExecuted,
@@ -87,7 +91,7 @@ describe("router indexer", () => {
           },
         ],
       },
-      { blockNumber: 11, blockHash: "0x11", receipts: [] },
+      { blockNumber: 11, blockHash: "0x11", parentHash: "0x10", receipts: [] },
     ];
     const reader: ChainReader = {
       getLatestBlockNumber: async () => 11,
@@ -121,5 +125,109 @@ describe("router indexer", () => {
       executions: 0,
     });
     expect(store.executions.size).toBe(1);
+  });
+
+  it("projects only successful finalized receipts", async () => {
+    const successfulEvent = event(
+      ROUTER_EVENT_SELECTORS.policyExecuted,
+      ["0x1"],
+      ["0xdef", "0x1234", "0xabc", "0x2a", "0xbeef"],
+    );
+    const blocks: ChainBlock[] = [
+      {
+        blockNumber: 20,
+        blockHash: "0x20",
+        receipts: [
+          { transactionHash: "0xpending", events: [successfulEvent] },
+          {
+            transactionHash: "0xreverted",
+            executionStatus: "REVERTED",
+            finalityStatus: "ACCEPTED_ON_L2",
+            events: [successfulEvent],
+          },
+          {
+            transactionHash: "0xaccepted",
+            executionStatus: "SUCCEEDED",
+            finalityStatus: "ACCEPTED_ON_L2",
+            events: [successfulEvent],
+          },
+        ],
+      },
+    ];
+    const reader: ChainReader = {
+      getLatestBlockNumber: async () => 20,
+      getBlockWithReceipts: async () => blocks[0]!,
+    };
+    const store = new MemoryStore();
+    const indexer = new RouterIndexer(reader, store, {
+      network,
+      routerAddress: router,
+      startBlock: 20,
+      chunkSize: 1,
+    });
+
+    await expect(indexer.syncOnce()).resolves.toMatchObject({ executions: 1 });
+    expect([...store.executions.values()][0]?.txHash).toBe("0xaccepted");
+  });
+
+  it("fails closed when the next block does not extend the recorded hash", async () => {
+    const firstReader: ChainReader = {
+      getLatestBlockNumber: async () => 30,
+      getBlockWithReceipts: async () => ({
+        blockNumber: 30,
+        blockHash: "0x30",
+        receipts: [],
+      }),
+    };
+    const store = new MemoryStore();
+    const options = { network, routerAddress: router, startBlock: 30, chunkSize: 1 };
+    await new RouterIndexer(firstReader, store, options).syncOnce();
+
+    const reorgReader: ChainReader = {
+      getLatestBlockNumber: async () => 31,
+      getBlockWithReceipts: async () => ({
+        blockNumber: 31,
+        blockHash: "0x31-reorg",
+        parentHash: "0xwrong",
+        receipts: [],
+      }),
+    };
+    await expect(new RouterIndexer(reorgReader, store, options).syncOnce()).rejects.toThrow(
+      "chain reorganization detected",
+    );
+  });
+
+  it("updates a registered transaction only after its finalized receipt is observed", async () => {
+    const executionEvent = event(
+      ROUTER_EVENT_SELECTORS.policyExecuted,
+      ["0x1"],
+      ["0xdef", "0x1234", "0xabc", "0x2a", "0xbeef"],
+    );
+    const store = new MemoryStore();
+    await store.registerTransaction("sepolia", "0xaccepted", "router_execution");
+    const reader: ChainReader = {
+      getLatestBlockNumber: async () => 40,
+      getBlockWithReceipts: async () => ({
+        blockNumber: 40,
+        blockHash: "0x40",
+        receipts: [
+          {
+            transactionHash: "0xaccepted",
+            executionStatus: "SUCCEEDED",
+            finalityStatus: "ACCEPTED_ON_L2",
+            events: [executionEvent],
+          },
+        ],
+      }),
+    };
+
+    await new RouterIndexer(reader, store, {
+      network: "sepolia",
+      routerAddress: router,
+      startBlock: 40,
+      chunkSize: 1,
+    }).syncOnce();
+
+    expect(store.transactions.get("sepolia:0xaccepted")?.status).toBe("accepted");
   });
 });

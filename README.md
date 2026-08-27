@@ -13,7 +13,7 @@ private STRK20 capability
 
 ## Current status
 
-VOCAP is being developed for the STRK20 Private Sprint. The Cairo router and backend pass their local verification suites, and the router, approved target, and first STRK policy are deployed on Sepolia. The complete STRK20 private flow is the next integration gate. Mainnet remains on hold until that gate, artifact review, and fee dry-runs pass.
+VOCAP is being developed for the STRK20 Private Sprint. The Cairo router and backend pass their local verification suites, and the router, approved target, and first STRK policy are deployed on Sepolia. The complete STRK20 private flow is the next integration gate. Mainnet remains on hold until that gate, artifact review, backend release checks, and fee dry-runs pass.
 
 V1 is `RETURN` only. The frontend is intentionally out of scope while the contracts, backend, indexing, and smoke flows are being stabilized.
 
@@ -50,6 +50,7 @@ No private keys, viewing keys, wallet recovery secrets, RPC credentials, or depl
 
 The exact Sepolia gate and the two supported service deployment paths are documented in [docs/SEPOLIA_RUNBOOK.md](docs/SEPOLIA_RUNBOOK.md).
 The Starknet MCP setup and external signer boundary are documented in [docs/MCP_SETUP.md](docs/MCP_SETUP.md).
+The tracked Mainnet repository and external gates are documented in [docs/MAINNET_READINESS.md](docs/MAINNET_READINESS.md).
 
 ## License
 

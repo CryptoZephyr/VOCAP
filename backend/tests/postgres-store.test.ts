@@ -3,6 +3,9 @@ import { describe, expect, it } from "vitest";
 import { PostgresStore } from "../src/postgres-store.js";
 
 const databaseUrl = process.env.VOCAP_TEST_DATABASE_URL;
+if (!databaseUrl && process.env.VOCAP_REQUIRE_POSTGRES === "1") {
+  throw new Error("VOCAP_TEST_DATABASE_URL is required for the PostgreSQL integration suite");
+}
 const postgresDescribe = databaseUrl ? describe : describe.skip;
 
 postgresDescribe("PostgreSQL projection", () => {
@@ -10,11 +13,14 @@ postgresDescribe("PostgreSQL projection", () => {
     const pool = new Pool({ connectionString: databaseUrl });
     const store = new PostgresStore(pool);
     const routerAddress = "0xpostgres-test";
+    const otherRouterAddress = "0xpostgres-other";
 
     await store.migrate();
     await pool.query("DELETE FROM vocap_executions WHERE router_address = $1", [routerAddress]);
     await pool.query("DELETE FROM vocap_policies WHERE router_address = $1", [routerAddress]);
-    await pool.query("DELETE FROM vocap_sync_cursors WHERE network = $1", ["devnet"]);
+    await pool.query("DELETE FROM vocap_indexed_blocks WHERE router_address IN ($1, $2)", [routerAddress, otherRouterAddress]);
+    await pool.query("DELETE FROM vocap_transactions WHERE network = $1 AND tx_hash = $2", ["devnet", "0xlifecycle"]);
+    await pool.query("DELETE FROM vocap_sync_cursors WHERE network = $1 AND router_address IN ($2, $3)", ["devnet", routerAddress, otherRouterAddress]);
 
     const block = {
       network: "devnet" as const,
@@ -69,7 +75,7 @@ postgresDescribe("PostgreSQL projection", () => {
     await store.applyBlock(block);
     await store.applyBlock(block);
 
-    const cursor = await store.getCursor("devnet", 0);
+    const cursor = await store.getCursor("devnet", routerAddress, 0);
     const executionCount = await pool.query(
       "SELECT count(*)::int AS count FROM vocap_executions WHERE router_address = $1",
       [routerAddress],
@@ -80,12 +86,36 @@ postgresDescribe("PostgreSQL projection", () => {
     );
 
     expect(cursor).toBe(101);
+    expect(await store.getCursor("devnet", otherRouterAddress, 0)).toBe(0);
     expect(executionCount.rows[0]?.count).toBe(1);
     expect(policy.rows[0]?.enabled).toBe(false);
 
+    await store.registerTransaction("devnet", "0xlifecycle", "router_execution");
+    await store.observeReceipt("devnet", "0xlifecycle", "accepted");
+    const lifecycle = await pool.query(
+      "SELECT status FROM vocap_transactions WHERE network = $1 AND tx_hash = $2",
+      ["devnet", "0xlifecycle"],
+    );
+    expect(lifecycle.rows[0]?.status).toBe("accepted");
+
+    await expect(
+      store.applyBlock({
+        network: "devnet",
+        routerAddress,
+        blockNumber: 101,
+        blockHash: "0x101",
+        parentHash: "0xwrong",
+        policies: [],
+        policyEnabled: [],
+        executions: [],
+      }),
+    ).rejects.toThrow("chain reorganization detected");
+
     await pool.query("DELETE FROM vocap_executions WHERE router_address = $1", [routerAddress]);
     await pool.query("DELETE FROM vocap_policies WHERE router_address = $1", [routerAddress]);
-    await pool.query("DELETE FROM vocap_sync_cursors WHERE network = $1", ["devnet"]);
+    await pool.query("DELETE FROM vocap_indexed_blocks WHERE router_address IN ($1, $2)", [routerAddress, otherRouterAddress]);
+    await pool.query("DELETE FROM vocap_transactions WHERE network = $1 AND tx_hash = $2", ["devnet", "0xlifecycle"]);
+    await pool.query("DELETE FROM vocap_sync_cursors WHERE network = $1 AND router_address IN ($2, $3)", ["devnet", routerAddress, otherRouterAddress]);
     await store.close();
   });
 });

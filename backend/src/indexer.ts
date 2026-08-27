@@ -1,6 +1,7 @@
 import type { ChainBlock, ChainReader, ChainReceipt } from "./chain.js";
 import { parseRouterEvent } from "./events.js";
 import { normalizeAddress } from "./config.js";
+import { isConfirmedSuccessfulReceipt, receiptStatusOrPending } from "./transaction-state.js";
 import type {
   BlockProjection,
   ExecutionProjection,
@@ -39,7 +40,12 @@ export class RouterIndexer {
   }
 
   public async syncOnce(): Promise<SyncResult> {
-    const cursor = await this.store.getCursor(this.options.network, this.options.startBlock);
+    const cursorState = await this.store.getCursorState(
+      this.options.network,
+      this.options.routerAddress,
+      this.options.startBlock,
+    );
+    const cursor = cursorState.nextBlock;
     const latest = await this.reader.getLatestBlockNumber();
     if (cursor > latest) {
       return { fromBlock: cursor, toBlock: null, blocks: 0, executions: 0 };
@@ -49,9 +55,20 @@ export class RouterIndexer {
     let executionCount = 0;
     for (let blockNumber = cursor; blockNumber <= end; blockNumber += 1) {
       const block = await this.reader.getBlockWithReceipts(blockNumber);
+      if (block.blockNumber !== blockNumber) {
+        throw new Error(
+          `RPC returned block ${block.blockNumber} while requesting ${blockNumber}`,
+        );
+      }
       const projection = projectBlock(this.options.network, this.options.routerAddress, block);
       executionCount += projection.executions.length;
       await this.store.applyBlock(projection);
+      for (const receipt of block.receipts) {
+        const status = receiptStatusOrPending(receipt);
+        if (status !== "pending") {
+          await this.store.observeReceipt(this.options.network, receipt.transactionHash, status);
+        }
+      }
     }
 
     return {
@@ -90,6 +107,7 @@ export function projectBlock(
     routerAddress,
     blockNumber: block.blockNumber,
     blockHash: block.blockHash,
+    ...(block.parentHash === undefined ? {} : { parentHash: block.parentHash }),
     policies,
     policyEnabled,
     executions,
@@ -106,6 +124,8 @@ function projectReceipt(
   policyEnabled: PolicyEnabledProjection[],
   executions: ExecutionProjection[],
 ): void {
+  if (!isConfirmedSuccessfulReceipt(receipt)) return;
+
   receipt.events.forEach((event, eventIndex) => {
     const parsed = parseRouterEvent(routerAddress, event);
     if (!parsed) return;

@@ -1,0 +1,41 @@
+# Mainnet readiness
+
+This document is the tracked release checklist for the VOCAP Mainnet path. It records repository gates only. A passing local build or test does not prove a Mainnet deployment, a private transaction, or the availability of an external privacy service.
+
+## Repository gates
+
+- [x] Review the final contract source and generated Sierra and CASM artifacts from one commit.
+- [x] Run `scarb build` and `snforge test` with the pinned toolchain.
+- [x] Run `corepack pnpm typecheck`, `corepack pnpm test`, and `corepack pnpm build` from `backend/`.
+- [ ] Run the PostgreSQL integration suite against the same schema used by the deployment.
+- [x] Confirm the backend is configured with an explicit network and that the RPC reports the matching Starknet chain ID.
+- [x] Confirm the indexer accepts only successful, finalized receipts.
+- [x] Confirm the sync cursor is scoped to the router and fails closed on block continuity or reorganization errors.
+- [x] Confirm transaction lifecycle updates are connected to receipt observation and remain atomic under concurrent writers.
+- [ ] Confirm retry, shutdown, and health behavior through an operational test or supervised deployment.
+- [x] Confirm no private keys, viewing keys, RPC credentials, or wallet recovery secrets are present in the repository or release bundle.
+
+## Verification snapshot
+
+Recorded 2026-08-27 from the final working tree:
+
+- `scarb build` and `snforge test`: 26 passed.
+- Backend typecheck and build: passed. The default Vitest run: 31 passed, 1 skipped. The skipped test is the PostgreSQL integration test because no test database URL was configured.
+- `corepack pnpm test:postgres` is available for an explicit database run. The local PostgreSQL role used for verification currently lacks permission to create objects in the `public` schema, so that gate remains open.
+- No Mainnet funding, deployment, or private transaction was attempted.
+
+## External gates
+
+- [ ] Complete the real Sepolia STRK20 RETURN and succession sequence with final receipts, pool note evidence, and backend indexing evidence. The current Sepolia record proves deployment and policy configuration only.
+- [ ] Verify the exact Mainnet privacy-pool address, class hash, version, fee, and action ordering against the selected SDK release, including pool-side enforcement of the withdrawal boundary.
+- [ ] Confirm the frozen V1 target accepts only the intended no-argument call shape, or add and redeploy an explicit target-calldata restriction before expanding the target surface.
+- [ ] Verify the proving and discovery service revisions or image digests against the selected SDK release.
+- [ ] Select a fresh Mainnet wallet and record only its public address and wallet type. Keep signing material outside the repository.
+- [ ] Refresh exact fee estimates for account setup, declarations, deployments, policy configuration, funding, and proof-backed private actions.
+- [ ] Declare and deploy the frozen classes, then read back class hashes and constructor state from Mainnet.
+- [ ] Create policy `1` and read it back from the live Router.
+- [ ] Rehearse the deployment and recovery procedure with the final addresses and an approved retry buffer.
+
+## Release rule
+
+Do not fund or broadcast a Mainnet transaction while a repository or external gate above is open. After deployment, verify every transaction by final receipt, expected events, and read-back state before treating the step as complete.
