@@ -7,12 +7,13 @@ This document is the tracked release checklist for the VOCAP Mainnet path. It re
 - [x] Review the final contract source and generated Sierra and CASM artifacts from one commit.
 - [x] Run `scarb build` and `snforge test` with the pinned toolchain.
 - [x] Run `corepack pnpm typecheck`, `corepack pnpm test`, and `corepack pnpm build` from `backend/`.
-- [ ] Run the PostgreSQL integration suite against the same schema used by the deployment.
+- [x] Run the PostgreSQL integration suite against the current migration schema in a disposable PostgreSQL database.
 - [x] Confirm the backend is configured with an explicit network and that the RPC reports the matching Starknet chain ID.
 - [x] Confirm the indexer accepts only successful, finalized receipts.
 - [x] Confirm the sync cursor is scoped to the router and fails closed on block continuity or reorganization errors.
 - [x] Confirm transaction lifecycle updates are connected to receipt observation and remain atomic under concurrent writers.
 - [ ] Confirm retry, shutdown, and health behavior through an operational test or supervised deployment.
+- [ ] Confirm the production `DATABASE_URL` role can run migrations, or move migrations to a separately privileged deployment step.
 - [x] Confirm no private keys, viewing keys, RPC credentials, or wallet recovery secrets are present in the repository or release bundle.
 
 ## Verification snapshot
@@ -20,8 +21,8 @@ This document is the tracked release checklist for the VOCAP Mainnet path. It re
 Recorded 2026-08-27 from the final working tree:
 
 - `scarb build` and `snforge test`: 26 passed.
-- Backend typecheck and build: passed. The default Vitest run: 31 passed, 1 skipped. The skipped test is the PostgreSQL integration test because no test database URL was configured.
-- `corepack pnpm test:postgres` is available for an explicit database run. The local PostgreSQL role used for verification currently lacks permission to create objects in the `public` schema, so that gate remains open.
+- Backend typecheck and build: passed. The default Vitest run: 31 passed, 1 skipped because the PostgreSQL test is guarded when no test database URL is configured.
+- Explicit `corepack pnpm test:postgres`: 1 test passed against a disposable PostgreSQL database. The test covered migration, idempotent replay, router-scoped cursors, lifecycle observation, and reorganization rejection.
 - No Mainnet funding, deployment, or private transaction was attempted.
 
 ## External gates
