@@ -17,7 +17,28 @@ export class PostgresStore implements VocapStore {
   public constructor(private readonly pool: Pool) {}
 
   public async migrate(): Promise<void> {
-    await this.pool.query(await loadMigrationSql());
+    const client = await this.pool.connect();
+    try {
+      await client.query("BEGIN");
+      await client.query(await loadMigrationSql());
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  public async assertSchemaReady(): Promise<void> {
+    try {
+      await this.pool.query("SELECT 1 FROM vocap_sync_cursors LIMIT 0");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      throw new Error(
+        `VOCAP database schema check failed. Run corepack pnpm migrate with the migration role and grant the runtime role application access: ${message}`,
+      );
+    }
   }
 
   public async getCursor(network: Network, routerAddress: string, startBlock: number): Promise<number>;

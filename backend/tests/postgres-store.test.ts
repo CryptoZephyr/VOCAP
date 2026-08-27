@@ -1,5 +1,6 @@
 import { Pool } from "pg";
 import { describe, expect, it } from "vitest";
+import { runMigrations } from "../src/migrate.js";
 import { PostgresStore } from "../src/postgres-store.js";
 
 const databaseUrl = process.env.VOCAP_TEST_DATABASE_URL;
@@ -15,7 +16,8 @@ postgresDescribe("PostgreSQL projection", () => {
     const routerAddress = "0xpostgres-test";
     const otherRouterAddress = "0xpostgres-other";
 
-    await store.migrate();
+    await runMigrations(databaseUrl!);
+    await expect(store.assertSchemaReady()).resolves.toBeUndefined();
     await pool.query("DELETE FROM vocap_executions WHERE router_address = $1", [routerAddress]);
     await pool.query("DELETE FROM vocap_policies WHERE router_address = $1", [routerAddress]);
     await pool.query("DELETE FROM vocap_indexed_blocks WHERE router_address IN ($1, $2)", [routerAddress, otherRouterAddress]);

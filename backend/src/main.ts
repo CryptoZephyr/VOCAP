@@ -22,8 +22,8 @@ async function main(): Promise<void> {
   process.once("SIGINT", stop);
   process.once("SIGTERM", stop);
   try {
+    await store.assertSchemaReady();
     await reader.verifyNetwork(config.network);
-    await store.migrate();
     let failureCount = 0;
     do {
       if (abortController.signal.aborted) break;

@@ -13,7 +13,8 @@ This document is the tracked release checklist for the VOCAP Mainnet path. It re
 - [x] Confirm the sync cursor is scoped to the router and fails closed on block continuity or reorganization errors.
 - [x] Confirm transaction lifecycle updates are connected to receipt observation and remain atomic under concurrent writers.
 - [ ] Confirm retry, shutdown, and health behavior through an operational test or supervised deployment.
-- [ ] Confirm the production `DATABASE_URL` role can run migrations, or move migrations to a separately privileged deployment step.
+- [x] Provide `corepack pnpm migrate` as a separately privileged deployment step; normal indexer startup performs a read-only schema check and does not execute DDL.
+- [ ] Execute the migration step with the production migration role and verify the runtime role has its required application privileges.
 - [x] Confirm no private keys, viewing keys, RPC credentials, or wallet recovery secrets are present in the repository or release bundle.
 
 ## Verification snapshot
@@ -22,8 +23,11 @@ Recorded 2026-08-27 from the final working tree:
 
 - `scarb build` and `snforge test`: 26 passed.
 - Backend typecheck and build: passed. The default Vitest run: 31 passed, 1 skipped because the PostgreSQL test is guarded when no test database URL is configured.
+- `DATABASE_URL=<migration-role-url> corepack pnpm migrate`: completed successfully against the disposable PostgreSQL database and can be rerun idempotently.
 - Explicit `corepack pnpm test:postgres`: 1 test passed against a disposable PostgreSQL database. The test covered migration, idempotent replay, router-scoped cursors, lifecycle observation, and reorganization rejection.
 - No Mainnet funding, deployment, or private transaction was attempted.
+
+The production sequence is: provision the migration role as the database or schema owner, run the migration job once, grant the runtime role `USAGE` plus application DML on the `vocap_*` tables, then start the indexer with only the runtime URL.
 
 ## External gates
 
