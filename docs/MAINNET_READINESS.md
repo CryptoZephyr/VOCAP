@@ -23,14 +23,15 @@ This document is the tracked release checklist for the VOCAP Mainnet path. It re
 Recorded 2026-08-28 from the final working tree:
 
 - `scarb build` and `snforge test`: 26 passed.
-- Backend typecheck and build: passed. The default Vitest run: 31 passed, 1 skipped because the PostgreSQL test is guarded when no test database URL is configured.
+- Backend typecheck and build: passed. The default Vitest run: 36 passed, 1 skipped because the PostgreSQL test is guarded when no test database URL is configured.
 - `DATABASE_URL=<migration-role-url> corepack pnpm migrate`: completed successfully against the disposable PostgreSQL database and can be rerun idempotently.
 - Explicit `corepack pnpm test:postgres`: 1 test passed against a disposable PostgreSQL database. The test covered migration, idempotent replay, router-scoped cursors, lifecycle observation, and reorganization rejection.
 - Render deployment preparation: `render.yaml` defines a zero-dollar Sepolia web service with `/healthz`, free PostgreSQL, frozen-lockfile build, idempotent startup migration, secret RPC prompt, and disabled automatic deploys. The service uses the verified router address and its L1-finalized deployment block. Render CLI `v2.25.0` is installed locally, and both Blueprint files validate with it.
 - User-wallet write boundary: `backend/src/wallet-flow.ts` validates the privacy SDK result and forwards the proof to a connected wallet for normal user approval. The backend still holds no signer or viewing key.
 - Zero-dollar Mainnet observer preparation: `render.mainnet.yaml` defines a separate free, read-only Mainnet profile with required manual RPC, router, and start-block inputs, a 60-second polling interval, `/healthz`, and disabled automatic deploys. It remains unusable until the Mainnet addresses and deployment block are verified.
 - Operational smoke test: the compiled indexer connected to Sepolia and PostgreSQL, projected blocks `14143062` through `14143086`, received `SIGTERM`, closed cleanly, and exited with status `0`. The broader operational gate remains open until retry and ongoing cursor health are observed on the supervised Render service.
-- Render provider validation: the authenticated CLI reports `valid: true` and two planned free resources, `vocap-sepolia-indexer` and `vocap-sepolia-postgres`. No Render resource has been created.
+- Supervised Render deployment: the first Blueprint sync failed during `pnpm install` because Render's pnpm supply-chain policy blocked the unused `esbuild` install script. Commit `69865b89108a3ca86095c95b43158f793ccc6dd6` added `--ignore-scripts` to both deployment profiles. The replacement Sepolia deploy succeeded, completed the database migration, and is live at `https://vocap-sepolia-indexer.onrender.com`. The `/healthz` check returned `status: ok` with no sync error while the initial projection backfill continued.
+- Render provider validation: the authenticated CLI reports `valid: true`. The free resources `vocap-sepolia-indexer` and `vocap-sepolia-postgres` are now created in Frankfurt, with automatic deploys disabled. The database remains available for the supervised Sepolia deployment.
 - Live Sepolia RETURN, reuse, succession, stale-note rejection, and backend projection evidence is recorded in [SEPOLIA_RUNBOOK.md](SEPOLIA_RUNBOOK.md). The RETURN receipts reached L1 finality. The newer succession receipts were successful and accepted on L2 when recorded.
 - No Mainnet funding, deployment, or private transaction was attempted.
 
