@@ -8,7 +8,7 @@ This record freezes the static VOCAP production artifacts for review. It does no
 - Scarb: `2.20.1`
 - Cairo: `2.20.0`
 - Starknet.js: `10.5.0`
-- Privacy SDK: `@starkware-libs/starknet-privacy-sdk@0.14.3-rc.5`
+- Privacy SDK: `@starkware-libs/starknet-privacy-sdk@0.14.3-rc.5`, official tag commit `66e3caae8c0201227a6719696d004e30d90aea65`
 
 ## Production contracts
 
@@ -32,6 +32,7 @@ Additional generated artifact:
 ## Freeze limits
 
 - The contract source and static artifacts are frozen for review. Contract tests and backend changes do not alter these production class hashes.
-- The real Sepolia STRK20 RETURN, succession, and backend indexing sequence is still required.
-- The exact Mainnet pool, account, deployment, policy, fee, proof, and service-image evidence is still required.
+- The historical Router completed the real Sepolia STRK20 RETURN, succession, and backend indexing sequence. The frozen Router hash differs because it contains the post-review surplus-balance fix, so the exact frozen Router still requires a Sepolia deployment rehearsal.
+- The Mainnet pool address, class hash, version, fee, and proof window were refreshed at block `14,001,956` and are recorded in [STARKNET_MAINNET_DEPENDENCIES.md](STARKNET_MAINNET_DEPENDENCIES.md).
+- The exact Mainnet account, deployment, policy, final fee, proof, and service-image evidence is still required.
 - No private key, viewing key, RPC credential, or wallet recovery secret belongs in this record or repository.

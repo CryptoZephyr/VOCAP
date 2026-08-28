@@ -55,7 +55,7 @@ The original user-wallet write path is documented in [docs/WALLET_FLOW.md](docs/
 
 ## Backend deployment
 
-The repository includes a zero-dollar Render Blueprint for a supervised Sepolia web service and free PostgreSQL database. It keeps automatic deploys disabled and requires the RPC URL to be entered through Render's secret prompt. See [backend/README.md](backend/README.md) for free-tier limits, deployment, and database-role details. This profile is for Sepolia development and demonstrations. A separate [Mainnet observer Blueprint](render.mainnet.yaml) is available for a read-only, monitored Mainnet pilot. It does not imply that the Mainnet contracts or external service gates are complete.
+The repository includes a zero-dollar Render Blueprint for the supervised Sepolia service. Mainnet uses a separate zero-dollar design: Neon Free PostgreSQL plus a scheduled GitHub Actions indexer. See [docs/ZERO_COST_MAINNET_BACKEND.md](docs/ZERO_COST_MAINNET_BACKEND.md). The Mainnet workflow stays inactive until the verified Router address and deployment block are entered through the protected GitHub environment.
 
 ## License
 

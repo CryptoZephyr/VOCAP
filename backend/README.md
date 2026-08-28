@@ -22,17 +22,11 @@ render blueprints validate render.yaml
 
 Creating the Blueprint provisions free Render resources, subject to Render's free-tier limits and the 30-day PostgreSQL lifetime. Review those limits in the Render dashboard before approving the first sync.
 
-### Zero-dollar Mainnet observer
+### Zero-dollar Mainnet backend
 
-`render.mainnet.yaml` is a separate read-only Mainnet profile. It uses the same free web-service shape, but requires the RPC URL, router address, and verified router deployment start block to be entered manually. Those values stay unset in Git so an incorrect or unfinished Mainnet deployment cannot be indexed by accident. The profile polls every 60 seconds to reduce free-tier outbound traffic and keeps automatic deploys disabled.
+Mainnet uses Neon Free PostgreSQL and `.github/workflows/vocap-mainnet-indexer.yml`. The scheduled job invokes the existing `--once` mode in bounded batches, then exits. It uses a restricted pooled runtime credential. A separate direct migration credential is available only to manually dispatched migration runs.
 
-Use this profile only after the Mainnet router and policy state have been deployed and read back. Keep a free uptime monitor requesting `/healthz` at least every 10 minutes if you need the service awake. The service remains an observer. It never needs a wallet, private key, viewing key, or transaction signer.
-
-Validate the Mainnet profile without creating resources:
-
-```bash
-render blueprints validate render.mainnet.yaml
-```
+See [docs/ZERO_COST_MAINNET_BACKEND.md](../docs/ZERO_COST_MAINNET_BACKEND.md) for setup, limits, recovery behavior, and the exact GitHub environment configuration. The workflow remains inactive until the verified Mainnet Router address and deployment block are configured.
 
 ## Local commands
 

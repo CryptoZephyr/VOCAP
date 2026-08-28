@@ -1,0 +1,103 @@
+name: VOCAP Mainnet indexer
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_migration:
+        description: Run the schema migration before indexing
+        required: true
+        default: false
+        type: boolean
+  schedule:
+    - cron: "7,17,27,37,47,57 * * * *"
+
+concurrency:
+  group: vocap-mainnet-indexer
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: vocap-mainnet
+    env:
+      STARKNET_NETWORK: mainnet
+      STARKNET_RPC_URL: ${{ secrets.STARKNET_RPC_URL }}
+      VOCAP_ROUTER_ADDRESS: ${{ vars.VOCAP_ROUTER_ADDRESS }}
+      VOCAP_START_BLOCK: ${{ vars.VOCAP_START_BLOCK }}
+      VOCAP_SYNC_CHUNK_SIZE: "50"
+      VOCAP_POLL_MS: "60000"
+      DATABASE_URL: ${{ secrets.VOCAP_DATABASE_URL }}
+      MIGRATION_DATABASE_URL: ${{ secrets.VOCAP_MIGRATION_DATABASE_URL }}
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Check out the release commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Check release configuration
+        id: preflight
+        shell: bash
+        run: |
+          missing=0
+          for name in STARKNET_RPC_URL VOCAP_ROUTER_ADDRESS VOCAP_START_BLOCK DATABASE_URL; do
+            if [ -z "${!name}" ]; then
+              echo "Missing required Mainnet configuration: $name"
+              missing=1
+            fi
+          done
+          if [ "$missing" -eq 1 ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+              exit 1
+            fi
+            exit 0
+          fi
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Node.js
+        if: steps.preflight.outputs.configured == 'true'
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24.14.1
+          cache: pnpm
+          cache-dependency-path: backend/pnpm-lock.yaml
+
+      - name: Enable pnpm
+        if: steps.preflight.outputs.configured == 'true'
+        run: corepack enable
+
+      - name: Install and build
+        if: steps.preflight.outputs.configured == 'true'
+        run: |
+          corepack pnpm install --frozen-lockfile --ignore-scripts
+          corepack pnpm build
+
+      - name: Run migration
+        if: steps.preflight.outputs.configured == 'true' && inputs.run_migration == true
+        env:
+          DATABASE_URL: ${{ secrets.VOCAP_MIGRATION_DATABASE_URL }}
+        run: |
+          if [ -z "$DATABASE_URL" ]; then
+            echo "VOCAP_MIGRATION_DATABASE_URL is required when run_migration is enabled"
+            exit 1
+          fi
+          corepack pnpm migrate
+
+      - name: Catch up finalized Mainnet blocks
+        if: steps.preflight.outputs.configured == 'true'
+        shell: bash
+        run: |
+          corepack pnpm verify:runtime-role
+          for attempt in {1..12}; do
+            output="$(corepack pnpm start -- --once)"
+            echo "$output"
+            if echo "$output" | grep -q '"blocks":0'; then
+              break
+            fi
+          done

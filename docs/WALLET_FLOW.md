@@ -1,6 +1,6 @@
 # User wallet flow
 
-VOCAP's V1 write path is user-controlled. The browser wallet owns the Starknet account, the privacy viewing key, and the private note registry. The Render service remains a public projection and status service. It never receives a private key or viewing key.
+VOCAP's V1 write path is user-controlled. The browser wallet owns the Starknet account, the privacy viewing key, and the private note registry. The backend remains a public projection service. It never receives a private key or viewing key.
 
 ## Sequence
 
@@ -39,7 +39,7 @@ The wallet app must keep these values local to the wallet process:
 
 ## Building the RETURN action
 
-The pinned privacy SDK is the component that discovers the note, creates the private withdrawal, creates the fresh open return note, and asks the user wallet to sign the proof invocation. The VOCAP callback binds the SDK context to the configured router policy:
+The official privacy SDK tag `PRIVACY-0.14.3-RC.5` at commit `66e3caae8c0201227a6719696d004e30d90aea65` is the selected Mainnet source. It discovers the note, creates the private withdrawal, creates the fresh open return note, and asks the user wallet to sign the proof invocation. The VOCAP callback binds the SDK context to the configured router policy:
 
 ```typescript
 import { Open, createPrivateTransfers } from "@starkware-libs/starknet-privacy-sdk";

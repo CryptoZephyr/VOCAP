@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:postgres": "VOCAP_REQUIRE_POSTGRES=1 vitest run tests/postgres-store.test.ts",
     "migrate": "node dist/migrate.js",
+    "verify:runtime-role": "node dist/verify-runtime-role.js",
     "start": "node dist/main.js"
   },
   "dependencies": {
