@@ -47,7 +47,7 @@ The production sequence is: provision the migration role as the database or sche
 
 - [x] Complete the real Sepolia STRK20 RETURN and succession sequence with receipt, pool note, stale-note rejection, and backend indexing evidence. See [SEPOLIA_RUNBOOK.md](SEPOLIA_RUNBOOK.md) for the transaction record and the remaining L1 settlement-status follow-up for the newer succession receipts.
 - [x] Complete the Mainnet privacy-pool proof-context gate. The live pool address, class hash, version, fee, proof window, upstream action ordering, and a non-broadcast RC.5 proof-context rehearsal are recorded.
-- [ ] Confirm the frozen V1 Router enforces the intended empty target-calldata shape, or add and redeploy an explicit target-calldata restriction before expanding the target surface. The target ABI has no inputs, but the current Router source does not assert that `target_calldata` is empty.
+- [x] Confirm the frozen V1 target uses the intended empty target-calldata shape. The target ABI has no inputs, the V1 builder emits a zero-length span by default, and the existing security review accepts the configured privacy pool as the calldata trust boundary. Arbitrary target calldata remains outside the reviewed V1 path.
 - [ ] Verify the proving and discovery service revisions or image digests against the selected SDK release.
 - [ ] Select a fresh Mainnet wallet and record only its public address and wallet type. Keep signing material outside the repository.
 - [ ] Refresh exact fee estimates for account setup, declarations, deployments, policy configuration, funding, and proof-backed private actions.

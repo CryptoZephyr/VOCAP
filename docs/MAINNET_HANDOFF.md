@@ -8,7 +8,7 @@ Release branch: `main`
 
 Handoff commit at preparation time: `6475cb7647d496bd99e81dd2ac6fbaa6d000de03`
 
-Status: pre-write refresh completed. Local verification and a non-broadcast Mainnet proof-context rehearsal passed. No Mainnet declaration, deployment, policy write, funding transfer, private registration, private action, or scoring transaction has been submitted. Mainnet signing remains paused while the exact frozen Sepolia rehearsal, target-calldata gate, service provenance, and final sequential fee approval are open.
+Status: pre-write refresh completed. Local verification and a non-broadcast Mainnet proof-context rehearsal passed. No Mainnet declaration, deployment, policy write, funding transfer, private registration, private action, or scoring transaction has been submitted. Mainnet signing remains paused while the exact frozen Sepolia rehearsal, service provenance, and final sequential fee approval are open.
 
 This file is the execution handoff for the frozen VOCAP V1 release. It records what is ready, what must remain unchanged, the wallet and secret boundaries, the required transaction order, the corrected cost model, the STRK20 scoring evidence, the zero-cost backend activation sequence, and the conditions for stopping.
 
@@ -165,7 +165,7 @@ Do not begin Mainnet signing while any required pre-write gate is open:
 - [x] Generate a real Mainnet proof-context rehearsal using the official RC.5 SDK. This was non-broadcast and used a fresh in-memory viewing key.
 - [ ] Run a fresh sequential fee estimate for the entire final transaction sequence.
 - [ ] Confirm whether the wallet has enough STRK for the approved final estimate and retry buffer. The current balance is above the provisional `106 STRK` planning ceiling, but the final sequential quote and any provider charges remain open.
-- [ ] Confirm the V1 target still uses the reviewed no-argument `premium_action` call and empty target calldata.
+- [x] Confirm the V1 target uses the reviewed no-argument `premium_action` call and empty target calldata. The deployed target ABI has zero inputs, the V1 builder emits a zero-length span by default, and arbitrary target calldata remains outside the reviewed V1 path.
 
 Health responses alone do not clear the privacy-service compatibility gate. The services returned HTTP 200 and the RC.5 proof-context rehearsal passed, but their immutable deployed image digests were not available. The current upstream compatibility matrix also lists the RC.2 prover, discovery service, and SDK row, so the live service image and the selected RC.5 SDK still need an explicit release-family match before signing.
 
