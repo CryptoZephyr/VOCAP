@@ -51,6 +51,11 @@ No private keys, viewing keys, wallet recovery secrets, RPC credentials, or depl
 The exact Sepolia gate and the two supported service deployment paths are documented in [docs/SEPOLIA_RUNBOOK.md](docs/SEPOLIA_RUNBOOK.md).
 The Starknet MCP setup and external signer boundary are documented in [docs/MCP_SETUP.md](docs/MCP_SETUP.md).
 The tracked Mainnet repository and external gates are documented in [docs/MAINNET_READINESS.md](docs/MAINNET_READINESS.md).
+The original user-wallet write path is documented in [docs/WALLET_FLOW.md](docs/WALLET_FLOW.md). The wallet submits the private transaction, while the backend indexes its confirmed result.
+
+## Backend deployment
+
+The repository includes a zero-dollar Render Blueprint for a supervised Sepolia web service and free PostgreSQL database. It keeps automatic deploys disabled and requires the RPC URL to be entered through Render's secret prompt. See [backend/README.md](backend/README.md) for free-tier limits, deployment, and database-role details. This profile is for Sepolia development and demonstrations. A separate [Mainnet observer Blueprint](render.mainnet.yaml) is available for a read-only, monitored Mainnet pilot. It does not imply that the Mainnet contracts or external service gates are complete.
 
 ## License
 

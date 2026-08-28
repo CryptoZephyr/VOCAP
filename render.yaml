@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: vocap-sepolia-indexer
+    runtime: node
+    plan: free
+    region: frankfurt
+    rootDir: backend
+    buildCommand: corepack pnpm install --frozen-lockfile && corepack pnpm build
+    startCommand: corepack pnpm migrate && corepack pnpm start
+    autoDeployTrigger: "off"
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_VERSION
+        value: 24.14.1
+      - key: STARKNET_NETWORK
+        value: sepolia
+      - key: STARKNET_RPC_URL
+        sync: false
+      - key: VOCAP_ROUTER_ADDRESS
+        value: "0x0356db61e1d7eaa0417312307c128017e6cc1a85a5a8a649d5c23fee17312b2b"
+      - key: VOCAP_START_BLOCK
+        value: "13993404"
+      - key: VOCAP_SYNC_CHUNK_SIZE
+        value: "25"
+      - key: VOCAP_POLL_MS
+        value: "15000"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vocap-sepolia-postgres
+          property: connectionString
+
+databases:
+  - name: vocap-sepolia-postgres
+    plan: free
+    region: frankfurt
+    postgresMajorVersion: "18"
+    databaseName: vocap_sepolia
+    user: vocap
+    ipAllowList: []

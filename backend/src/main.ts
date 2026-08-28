@@ -1,6 +1,8 @@
+import type { Server } from "node:http";
 import { Pool } from "pg";
 import { loadConfig } from "./config.js";
 import { StarknetChainReader } from "./chain.js";
+import { closeHealthServer, startHealthServer, type HealthState } from "./health.js";
 import { RouterIndexer } from "./indexer.js";
 import { PostgresStore } from "./postgres-store.js";
 
@@ -18,22 +20,36 @@ async function main(): Promise<void> {
 
   const once = process.argv.includes("--once");
   const abortController = new AbortController();
+  const healthState: HealthState = {
+    ready: false,
+    lastSyncAt: null,
+    lastError: null,
+  };
+  let healthServer: Server | undefined;
   const stop = () => abortController.abort();
   process.once("SIGINT", stop);
   process.once("SIGTERM", stop);
   try {
+    const port = readPort(process.env.PORT);
+    if (port !== undefined) {
+      healthServer = await startHealthServer(healthState, port);
+    }
     await store.assertSchemaReady();
     await reader.verifyNetwork(config.network);
+    healthState.ready = true;
     let failureCount = 0;
     do {
       if (abortController.signal.aborted) break;
       try {
         const result = await indexer.syncOnce();
         failureCount = 0;
+        healthState.lastSyncAt = new Date().toISOString();
+        healthState.lastError = null;
         process.stdout.write(`${JSON.stringify(result)}\n`);
       } catch (error) {
         if (once || isFatalIndexerError(error)) throw error;
         failureCount += 1;
+        healthState.lastError = error instanceof Error ? error.message : String(error);
         const retryMs = Math.min(30_000, 1_000 * 2 ** Math.min(failureCount - 1, 5));
         const message = error instanceof Error ? error.message : String(error);
         process.stderr.write(`VOCAP sync failed, retrying in ${retryMs}ms: ${message}\n`);
@@ -45,10 +61,24 @@ async function main(): Promise<void> {
       }
     } while (!once && !abortController.signal.aborted);
   } finally {
+    healthState.ready = false;
     process.removeListener("SIGINT", stop);
     process.removeListener("SIGTERM", stop);
-    await store.close();
+    try {
+      if (healthServer) await closeHealthServer(healthServer);
+    } finally {
+      await store.close();
+    }
   }
+}
+
+function readPort(value: string | undefined): number | undefined {
+  if (value === undefined || value.trim().length === 0) return undefined;
+  const port = Number(value);
+  if (!Number.isInteger(port) || port < 1 || port > 65_535) {
+    throw new Error("PORT must be an integer between 1 and 65535");
+  }
+  return port;
 }
 
 function isFatalIndexerError(error: unknown): boolean {

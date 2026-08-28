@@ -2,6 +2,38 @@
 
 The backend is a deterministic Starknet projection service. Onchain state and confirmed receipts remain authoritative. PostgreSQL stores the replayable operational projection and sync cursor. The backend does not hold private keys, viewing keys, or capability spend authority.
 
+## Render deployment
+
+The repository root contains `render.yaml` for a zero-dollar Sepolia web service and a free PostgreSQL database. The web service exists only because Render does not offer free background workers. It exposes `/healthz` and runs the indexer in the same process. The Blueprint keeps automatic deploys disabled until the first supervised deployment has passed. Render prompts for `STARKNET_RPC_URL` during Blueprint creation. Use an HTTPS Sepolia RPC URL and do not add wallet or signer secrets because the indexer is read-only.
+
+The free service build installs the frozen lockfile and compiles TypeScript. Its start command runs the idempotent database migration before each start, since Render's pre-deploy command is unavailable on free services. Render supplies the database's private connection string as `DATABASE_URL`, checks `/healthz`, and starts the indexer only after the migration succeeds. The process handles Render's shutdown signal and closes PostgreSQL cleanly within the free-tier platform limit.
+
+Free Render web services sleep after 15 minutes without inbound traffic, and free Render PostgreSQL expires after 30 days without backups. Keep this profile for Sepolia development and supervised demonstrations. An external free uptime monitor can request `/healthz` every few minutes if continuous testnet polling is needed. This profile is not Mainnet infrastructure.
+
+The Sepolia service starts at block `13993404`, the verified L1-finalized router deployment block. Its configured router is `0x0356db61e1d7eaa0417312307c128017e6cc1a85a5a8a649d5c23fee17312b2b`. This lets a fresh database rebuild the full router projection instead of beginning after the policy and earlier execution events.
+
+The initial Blueprint connection uses the Render database owner for both migration and runtime access. Before a production Mainnet deployment, create a narrower runtime database role, grant only the application privileges described below, and replace the service's `DATABASE_URL` after the migration. Keep the migration-capable URL available only to a separate migration job.
+
+Validate the deployment file without creating resources:
+
+```bash
+render blueprints validate render.yaml
+```
+
+Creating the Blueprint provisions free Render resources, subject to Render's free-tier limits and the 30-day PostgreSQL lifetime. Review those limits in the Render dashboard before approving the first sync.
+
+### Zero-dollar Mainnet observer
+
+`render.mainnet.yaml` is a separate read-only Mainnet profile. It uses the same free web-service shape, but requires the RPC URL, router address, and verified router deployment start block to be entered manually. Those values stay unset in Git so an incorrect or unfinished Mainnet deployment cannot be indexed by accident. The profile polls every 60 seconds to reduce free-tier outbound traffic and keeps automatic deploys disabled.
+
+Use this profile only after the Mainnet router and policy state have been deployed and read back. Keep a free uptime monitor requesting `/healthz` at least every 10 minutes if you need the service awake. The service remains an observer. It never needs a wallet, private key, viewing key, or transaction signer.
+
+Validate the Mainnet profile without creating resources:
+
+```bash
+render blueprints validate render.mainnet.yaml
+```
+
 ## Local commands
 
 From WSL, use the pinned Node runtime and Corepack pnpm:
@@ -43,3 +75,9 @@ Set `STARKNET_RPC_URL` to the verified Sepolia RPC selected for the deployment, 
 - `vocap_transactions` records lifecycle transitions separately from execution events.
 
 Replay is idempotent by `(network, router, transaction hash, event index)`. Cursor advancement and block projection happen in one PostgreSQL transaction. Pending transactions are never treated as successful until a confirmed receipt is observed. The production process handles SIGINT and SIGTERM for graceful shutdown, while the chain reader retries transient RPC failures with bounded exponential backoff.
+
+## User wallet write path
+
+The backend is part of an active application flow even though it does not hold a signer. A browser wallet and the official privacy SDK build and submit the private `apply_actions` transaction. The backend helper `submitVocapPrivateResult` validates the SDK result, forwards the proof facts and proof to the connected wallet, and returns the wallet-submitted transaction hash. The wallet remains responsible for user approval, signing, and broadcasting.
+
+Use [docs/WALLET_FLOW.md](../docs/WALLET_FLOW.md) for the complete V1 RETURN sequence. Do not add a private key, viewing key, or capability signer to Render. The Render service can index the resulting receipt and expose operational status without taking custody of the capability.

@@ -7,3 +7,4 @@ export * from "./private-flow.js";
 export * from "./sepolia-config.js";
 export * from "./transaction-state.js";
 export * from "./types.js";
+export * from "./wallet-flow.js";

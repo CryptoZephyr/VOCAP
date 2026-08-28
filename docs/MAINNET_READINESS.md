@@ -14,6 +14,7 @@ This document is the tracked release checklist for the VOCAP Mainnet path. It re
 - [x] Confirm transaction lifecycle updates are connected to receipt observation and remain atomic under concurrent writers.
 - [ ] Confirm retry, shutdown, and health behavior through an operational test or supervised deployment.
 - [x] Provide `corepack pnpm migrate` as a separately privileged deployment step; normal indexer startup performs a read-only schema check and does not execute DDL.
+- [x] Keep the user-wallet write boundary separate from the backend and validate proven `apply_actions` calls before wallet submission.
 - [ ] Execute the migration step with the production migration role and verify the runtime role has its required application privileges.
 - [x] Confirm no private keys, viewing keys, RPC credentials, or wallet recovery secrets are present in the repository or release bundle.
 
@@ -25,6 +26,11 @@ Recorded 2026-08-28 from the final working tree:
 - Backend typecheck and build: passed. The default Vitest run: 31 passed, 1 skipped because the PostgreSQL test is guarded when no test database URL is configured.
 - `DATABASE_URL=<migration-role-url> corepack pnpm migrate`: completed successfully against the disposable PostgreSQL database and can be rerun idempotently.
 - Explicit `corepack pnpm test:postgres`: 1 test passed against a disposable PostgreSQL database. The test covered migration, idempotent replay, router-scoped cursors, lifecycle observation, and reorganization rejection.
+- Render deployment preparation: `render.yaml` defines a zero-dollar Sepolia web service with `/healthz`, free PostgreSQL, frozen-lockfile build, idempotent startup migration, secret RPC prompt, and disabled automatic deploys. The service uses the verified router address and its L1-finalized deployment block. Render CLI `v2.25.0` is installed locally, and both Blueprint files validate with it.
+- User-wallet write boundary: `backend/src/wallet-flow.ts` validates the privacy SDK result and forwards the proof to a connected wallet for normal user approval. The backend still holds no signer or viewing key.
+- Zero-dollar Mainnet observer preparation: `render.mainnet.yaml` defines a separate free, read-only Mainnet profile with required manual RPC, router, and start-block inputs, a 60-second polling interval, `/healthz`, and disabled automatic deploys. It remains unusable until the Mainnet addresses and deployment block are verified.
+- Operational smoke test: the compiled indexer connected to Sepolia and PostgreSQL, projected blocks `14143062` through `14143086`, received `SIGTERM`, closed cleanly, and exited with status `0`. The broader operational gate remains open until retry and ongoing cursor health are observed on the supervised Render service.
+- Render provider validation: the authenticated CLI reports `valid: true` and two planned free resources, `vocap-sepolia-indexer` and `vocap-sepolia-postgres`. No Render resource has been created.
 - Live Sepolia RETURN, reuse, succession, stale-note rejection, and backend projection evidence is recorded in [SEPOLIA_RUNBOOK.md](SEPOLIA_RUNBOOK.md). The RETURN receipts reached L1 finality. The newer succession receipts were successful and accepted on L2 when recorded.
 - No Mainnet funding, deployment, or private transaction was attempted.
 
