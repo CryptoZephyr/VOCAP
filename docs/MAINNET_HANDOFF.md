@@ -143,7 +143,7 @@ The 2026-08-29 operator refresh added this evidence:
 - `scarb build` passed with Scarb `2.20.1`, and `snforge test` passed all `26` tests again.
 - Backend typecheck, build, and the default Vitest run passed. The default run reported `39` passed and `1` skipped because the PostgreSQL test is guarded without a URL.
 - The forced PostgreSQL integration test passed `1` test against the local `vocap_test` database.
-- The Mainnet wallet read back as address `0x075f37debf547892cfcd1fa0e4d383a6cdec6b791dd8805078bf7ae65151f964`, account class `0x3957f9f5a1cbfe918cedc2015c85200ca51a5f7506ecb6de98a5207b759bf8a`, deployed state `true`, nonce `0x2`, and balance `126.443768493564389985 STRK`. The configured wallet label is `braavo` and must be confirmed or corrected to the actual wallet name before signing.
+- The Mainnet wallet read back as address `0x075f37debf547892cfcd1fa0e4d383a6cdec6b791dd8805078bf7ae65151f964`, account class `0x3957f9f5a1cbfe918cedc2015c85200ca51a5f7506ecb6de98a5207b759bf8a`, deployed state `true`, nonce `0x2`, and balance `126.443768493564389985 STRK`. The account class matches Braavos and the local wallet label is now corrected to `braavos`.
 - The live Mainnet refresh at block `14,018,608` confirmed chain `SN_MAIN`, the frozen STRK20 pool address, pool fee `6 STRK`, and proof-validity window `450` blocks.
 - The frozen salts derived expected Router `0x6048ed36607367ea5ae050c745d47006214ecf66fdbf173d01eba96ec5d780a` and target `0x74637f577350898c64835c88216df3030050828c723c6987a3d97d6d4eb986b` through the unique UDC path. Both deployment address fields remain blank until a write is approved.
 - A real RC.5 SDK proof-context rehearsal completed against the live Mainnet prover and discovery services using an in-memory viewing key. The prover returned `9` proof facts, `18` output words, and an `apply_actions` call. No transaction was broadcast and no viewing key was persisted.
@@ -159,7 +159,7 @@ Do not begin Mainnet signing while any required pre-write gate is open:
 - [x] Re-run the full local contract and backend verification from the exact release commit.
 - [ ] Deploy the exact frozen Router to Sepolia and repeat the RETURN and succession rehearsal. The older Sepolia Router has a different class hash.
 - [ ] Record L1 finality for the remaining historical Sepolia succession receipts or replace them with the exact frozen rehearsal evidence.
-- [ ] Confirm the final Mainnet wallet public address, wallet type, account class, deployment state, and nonce. The public address, account class, deployed state, and nonce are read back, but the configured wallet label is `braavo` and still needs operator confirmation.
+- [x] Confirm the final Mainnet wallet public address, wallet type, account class, deployment state, and nonce. The public address, Braavos account class, deployed state, and nonce are read back, and the local wallet label is `braavos`.
 - [x] Freeze Router and target deployment salts and derive their expected addresses before submission.
 - [ ] Obtain immutable prover and discovery revisions or image digests compatible with the selected release family.
 - [x] Generate a real Mainnet proof-context rehearsal using the official RC.5 SDK. This was non-broadcast and used a fresh in-memory viewing key.
@@ -192,7 +192,7 @@ The wallet identity read-back for this refresh was:
 | Account deployed | `true` |
 | Account nonce | `0x2` |
 | STRK balance | `126.443768493564389985 STRK` |
-| Configured wallet label | `braavo`, operator confirmation required |
+| Configured wallet label | `braavos` |
 
 The frozen deployment inputs produced these unique UDC addresses:
 
