@@ -12,13 +12,13 @@ This record identifies the exact upstream Starknet privacy source selected for V
 
 The selected commit is the immutable official RC.5 tag. Do not build the Mainnet wallet flow from the later local checkout at commit `51652200561151499b03f90e3a05f03c91f5b349`. That checkout still labels its package RC.5 but contains unreleased version `2.1` changes, while the live Mainnet privacy pool reports version `2.0`.
 
-The official RC.5 SDK build passed locally. Its external-invoke and compute-and-invoke suites passed `7` tests with coverage disabled. This verifies the SDK's local invoke construction and simulation path. It does not prove a live Mainnet proof or wallet transaction.
+The official RC.5 SDK build passed locally. Its external-invoke and compute-and-invoke suites passed `7` tests with coverage disabled. A separate non-broadcast proof-context rehearsal against the live Mainnet prover and discovery services also completed, returning `9` proof facts and the expected `apply_actions` call shape. This does not prove a submitted Mainnet transaction.
 
 The upstream pool interface enforces phased client actions. `CreateOpenNote` is phase `5`, `Withdraw` is phase `6`, and `InvokeExternal` is phase `7`, with at most one external invocation. VOCAP's callback additionally requires exactly one withdrawal to the Router and exactly one open return note for the policy token before it builds Router calldata.
 
 ## Live Mainnet read-only snapshot
 
-Recorded 2026-08-28 at Starknet Mainnet block `14,001,956`:
+Recorded 2026-08-29 at Starknet Mainnet block `14,018,608`:
 
 - Chain: `SN_MAIN`
 - Privacy pool: `0x040337b1af3c663e86e333bab5a4b28da8d4652a15a69beee2b677776ffe812a`
@@ -28,8 +28,11 @@ Recorded 2026-08-28 at Starknet Mainnet block `14,001,956`:
 - Proof validity window: `450` blocks
 - Transaction prover health: HTTP 200
 - Discovery service health: HTTP 200
+- Discovery chain head at service check: block `14,018,643`, about `5` seconds of lag
+- Transaction prover RPC spec: `0.10.3-rc.2`
+- OHTTP key responses: `43` bytes from both services
 
-The upstream compatibility matrix at the RC.5 tag still names `PRIVACY-0.14.3-RC.2` for the transaction prover, discovery service, and SDK row. The public Mainnet prover reports RPC spec `0.10.3-rc.2`, but that RPC value is not an immutable container digest. The deployed prover and discovery image digests remain unverified.
+The current upstream compatibility matrix names `PRIVACY-0.14.3-RC.2` for the transaction prover, discovery service, and SDK row. The selected local SDK remains the immutable `PRIVACY-0.14.3-RC.5` package. The public Mainnet prover reports RPC spec `0.10.3-rc.2`, but that RPC value is not an immutable container digest. The deployed prover and discovery image digests remain unverified. The RC.5 proof-context rehearsal is useful evidence that the live endpoints answered the selected protocol, but it does not establish the deployed image revision or clear the release-family gate.
 
 ## Release boundary
 

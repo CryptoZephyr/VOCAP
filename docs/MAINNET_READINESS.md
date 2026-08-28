@@ -20,7 +20,7 @@ This document is the tracked release checklist for the VOCAP Mainnet path. It re
 
 ## Verification snapshot
 
-Recorded 2026-08-28 from the final working tree:
+Recorded 2026-08-29 from the final working tree:
 
 - `scarb build` and `snforge test`: 26 passed.
 - Backend typecheck and build: passed. The default Vitest run: 36 passed, 1 skipped because the PostgreSQL test is guarded when no test database URL is configured.
@@ -36,14 +36,18 @@ Recorded 2026-08-28 from the final working tree:
 - No Mainnet funding, deployment, or private transaction was attempted.
 - Official privacy SDK preflight: immutable tag `PRIVACY-0.14.3-RC.5` at commit `66e3caae8c0201227a6719696d004e30d90aea65` built successfully, and its external-invoke suites passed `7` tests with coverage disabled. The later local `5165220` checkout is excluded from the Mainnet release because it contains unreleased version `2.1` changes while the live pool reports `2.0`.
 - Mainnet dependency refresh: at block `14,001,956`, the pool class hash remained `0x67dddd89d80fedadc06b6f160798f94800a4a70164e5a24301cd0d6076b554d`, version `2.0`, fee `6 STRK`, and proof window `450` blocks. Prover and discovery health returned HTTP 200. See [STARKNET_MAINNET_DEPENDENCIES.md](STARKNET_MAINNET_DEPENDENCIES.md).
+- Mainnet operator refresh: `scarb build` passed, all `26` contract tests passed, backend typecheck and build passed, the default backend run reported `39` passed and `1` guarded skip, and the forced PostgreSQL integration test passed `1` test against `vocap_test`.
+- Mainnet wallet read-back: address `0x075f37debf547892cfcd1fa0e4d383a6cdec6b791dd8805078bf7ae65151f964`, class hash `0x3957f9f5a1cbfe918cedc2015c85200ca51a5f7506ecb6de98a5207b759bf8a`, deployed `true`, nonce `0x2`, and balance `126.443768493564389985 STRK`. The local wallet label is `braavo` and needs confirmation or correction before signing.
+- A non-broadcast proof-context rehearsal using the official RC.5 SDK and the live Mainnet prover and discovery services returned `9` proof facts and an `apply_actions` call with `18` output words. The fresh viewing key was held in memory only.
+- The current read-only block was `14,018,608`. The pool still reported `6 STRK` protocol fee and a `450`-block proof-validity window. Frozen salts derived Router `0x6048ed36607367ea5ae050c745d47006214ecf66fdbf173d01eba96ec5d780a` and target `0x74637f577350898c64835c88216df3030050828c723c6987a3d97d6d4eb986b` addresses through the unique UDC path.
 
 The production sequence is: provision the migration role as the database or schema owner, run the migration job once, grant the runtime role `USAGE` plus application DML on the `vocap_*` tables, then start the indexer with only the runtime URL.
 
 ## External gates
 
 - [x] Complete the real Sepolia STRK20 RETURN and succession sequence with receipt, pool note, stale-note rejection, and backend indexing evidence. See [SEPOLIA_RUNBOOK.md](SEPOLIA_RUNBOOK.md) for the transaction record and the remaining L1 settlement-status follow-up for the newer succession receipts.
-- [ ] Complete the exact Mainnet privacy-pool compatibility gate. The address, class hash, version, fee, proof window, and upstream action ordering are recorded, but the selected SDK still needs a proof-context rehearsal against the live Mainnet release family.
-- [ ] Confirm the frozen V1 target accepts only the intended no-argument call shape, or add and redeploy an explicit target-calldata restriction before expanding the target surface.
+- [x] Complete the Mainnet privacy-pool proof-context gate. The live pool address, class hash, version, fee, proof window, upstream action ordering, and a non-broadcast RC.5 proof-context rehearsal are recorded.
+- [ ] Confirm the frozen V1 Router enforces the intended empty target-calldata shape, or add and redeploy an explicit target-calldata restriction before expanding the target surface. The target ABI has no inputs, but the current Router source does not assert that `target_calldata` is empty.
 - [ ] Verify the proving and discovery service revisions or image digests against the selected SDK release.
 - [ ] Select a fresh Mainnet wallet and record only its public address and wallet type. Keep signing material outside the repository.
 - [ ] Refresh exact fee estimates for account setup, declarations, deployments, policy configuration, funding, and proof-backed private actions.
