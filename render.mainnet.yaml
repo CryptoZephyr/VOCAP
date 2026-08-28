@@ -5,7 +5,7 @@ services:
     plan: free
     region: frankfurt
     rootDir: backend
-    buildCommand: corepack pnpm install --frozen-lockfile && corepack pnpm build
+    buildCommand: corepack pnpm install --frozen-lockfile --ignore-scripts && corepack pnpm build
     startCommand: corepack pnpm migrate && corepack pnpm start
     autoDeployTrigger: "off"
     healthCheckPath: /healthz
