@@ -23,8 +23,9 @@ This arrangement has no uptime SLA. GitHub may delay or drop scheduled jobs duri
 6. Add these environment variables only after Mainnet deployment read-back succeeds:
    - `VOCAP_ROUTER_ADDRESS`
    - `VOCAP_START_BLOCK`, the finalized Router deployment block.
-7. Run the workflow manually once with `run_migration` enabled.
-8. Run it manually again with migration disabled and verify that the cursor advances from the Router deployment block.
+7. Run the workflow in `preflight` mode. It reports missing configuration without starting the indexer.
+8. Run it once in `migrate-and-sync` mode after every release value is verified.
+9. Run it again in `sync` mode and verify that the cursor advances from the Router deployment block.
 
 Run the migration first with the Neon owner URL. Then use the Neon SQL editor as the owner to apply the runtime grants below. Replace the database or role name if your Neon project uses different names:
 
@@ -51,7 +52,7 @@ Never add connection strings, RPC credentials, wallet keys, or viewing keys to G
 
 The workflow starts at minutes 7, 17, 27, 37, 47, and 57 of each hour. Each run processes up to twelve chunks of fifty finalized blocks and exits early after reaching the chain head. Runs share a concurrency group, so two indexers cannot update the same cursor concurrently.
 
-The scheduled job is intentionally inactive until all four required runtime values exist. A manual run fails clearly when configuration is incomplete. Migration is manual-only and uses its separate credential.
+The scheduled job is intentionally inactive until all four required runtime values exist. Manual `preflight` mode reports missing values without failing or indexing. Activated `sync` and `migrate-and-sync` modes fail closed when configuration is incomplete. Migration is manual-only and uses its separate credential.
 
 ## Verification
 
