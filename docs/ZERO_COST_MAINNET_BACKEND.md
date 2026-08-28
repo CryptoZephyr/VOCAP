@@ -18,8 +18,8 @@ This arrangement has no uptime SLA. GitHub may delay or drop scheduled jobs duri
 4. Create a GitHub environment named `vocap-mainnet` and require deployment approval if the repository settings support it.
 5. Add these environment secrets:
    - `STARKNET_RPC_URL`, an HTTPS Mainnet RPC endpoint.
-   - `VOCAP_MIGRATION_DATABASE_URL`, the direct Neon owner connection string.
-   - `VOCAP_DATABASE_URL`, the pooled Neon connection string for the restricted runtime role.
+   - `VOCAP_MIGRATION_DATABASE_URL`, the Neon owner connection string.
+   - `VOCAP_DATABASE_URL`, the direct Neon connection string for the restricted runtime role.
 6. Add these environment variables only after Mainnet deployment read-back succeeds:
    - `VOCAP_ROUTER_ADDRESS`
    - `VOCAP_START_BLOCK`, the finalized Router deployment block.
@@ -29,7 +29,10 @@ This arrangement has no uptime SLA. GitHub may delay or drop scheduled jobs duri
 Run the migration first with the Neon owner URL. Then use the Neon SQL editor as the owner to apply the runtime grants below. Replace the database or role name if your Neon project uses different names:
 
 ```sql
-GRANT CONNECT ON DATABASE neondb TO vocap_runtime;
+CREATE ROLE vocap_runtime
+  LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT
+  PASSWORD '<generated-secret>';
+GRANT CONNECT ON DATABASE vocap_mainnet TO vocap_runtime;
 GRANT USAGE ON SCHEMA public TO vocap_runtime;
 REVOKE CREATE ON SCHEMA public FROM vocap_runtime;
 GRANT SELECT, INSERT, UPDATE ON ALL TABLES IN SCHEMA public TO vocap_runtime;
@@ -38,7 +41,9 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
   GRANT SELECT, INSERT, UPDATE ON TABLES TO vocap_runtime;
 ```
 
-Use Neon's direct owner connection string for `VOCAP_MIGRATION_DATABASE_URL`. Use the pooled connection string for `VOCAP_DATABASE_URL` after selecting the restricted runtime role in Neon's connection dialog. The workflow runs `verify:runtime-role` before every sync and stops if the credential is over-privileged or missing required access.
+Use the owner connection string for `VOCAP_MIGRATION_DATABASE_URL` and the restricted role's direct connection string for `VOCAP_DATABASE_URL`. The scheduled job opens only one small Node PostgreSQL pool, so a direct Neon endpoint is sufficient. The workflow runs `verify:runtime-role` before every sync and stops if the credential is over-privileged or missing required access.
+
+Neon's CLI-created roles inherit the `neon_superuser` role and are too broad for the runtime boundary. Create `vocap_runtime` with SQL as a login role that has `NOSUPERUSER`, `NOCREATEDB`, `NOCREATEROLE`, and `NOINHERIT`, then apply the grants above. The deployed runtime verifier rejects Neon owner or `neon_superuser` credentials.
 
 Never add connection strings, RPC credentials, wallet keys, or viewing keys to Git, workflow variables, logs, or issue comments. Connection strings belong in encrypted GitHub environment secrets.
 
