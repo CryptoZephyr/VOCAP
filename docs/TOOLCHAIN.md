@@ -18,7 +18,7 @@ The repository pins the tool versions observed in the verified WSL 2 Ubuntu envi
 | GCC | 15.2.0 | `cc --version` |
 | PostgreSQL | 18.6 | WSL package and local projection test |
 
-The commands were verified inside Ubuntu running under WSL 2 on 2026-08-24.
+The commands were verified inside Ubuntu running under WSL 2 on 2026-08-29.
 
 Rust and Ubuntu build-essential are installed because Starknet tooling builds native dependencies. In non-interactive WSL shells, source Rust with:
 
