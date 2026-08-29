@@ -38,6 +38,8 @@ The newest public preflight reached block `14,026,733` through Lava and `14,026,
 
 A fresh RC.5 proof preflight at block `14,027,254`, proving block `14,027,244`, again returned `9` proof facts, `18` `apply_actions` words, `304304` proof bytes, and HTTP `200` from both health and both OHTTP-key endpoints. An exploratory comparison compiled immutable RC.2 source at commit `9bfeb8dd35565a2915a0617dff3f649bd5bb891a` with the available dependency tree and produced the same proof shape. Neither check exposed an immutable deployed service revision or image digest.
 
+An isolated RC.2 worktree with a fresh dependency install passed the SDK build and all `252` non-devnet tests across `26` test files. Its proof preflight at block `14,027,816`, proving block `14,027,806`, returned `9` proof facts, `18` `apply_actions` words, `312200` proof bytes, and HTTP `200` from both health and both OHTTP-key endpoints. This is client-side compatibility evidence only. It does not prove which immutable service image is deployed.
+
 The current upstream compatibility matrix names `PRIVACY-0.14.3-RC.2` for the transaction prover, discovery service, and SDK row. The selected local SDK remains the immutable `PRIVACY-0.14.3-RC.5` package. The public Mainnet prover reports RPC spec `0.10.3-rc.2`, but that RPC value is not an immutable container digest. The deployed prover and discovery image digests remain unverified. The RC.5 proof-context rehearsal is useful evidence that the live endpoints answered the selected protocol, but it does not establish the deployed image revision or clear the release-family gate.
 
 ## Release boundary
