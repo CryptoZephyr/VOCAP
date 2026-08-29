@@ -53,7 +53,7 @@ Recorded 2026-08-29 at the RC2 proof refresh:
 - Prover health and OHTTP keys: HTTP `200`
 - Discovery health and OHTTP keys: HTTP `200`
 - Prover JSON-RPC spec: `0.10.3-rc.2`
-- RC2 proof refresh: block `14,036,380`, proving block `14,036,370`, `305284` proof bytes
+- RC2 proof refresh: block `14,037,561`, proving block `14,037,551`, `309680` proof bytes
 
 The protocol responses match RC2, but neither service exposes an immutable image digest or revision. Health, key, and protocol responses do not prove the deployed image tag. The service operator must provide the prover and discovery image digests or immutable revisions before the privacy release-family gate can close.
 
