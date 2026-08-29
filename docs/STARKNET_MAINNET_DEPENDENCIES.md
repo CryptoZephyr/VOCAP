@@ -36,7 +36,7 @@ Source: [official Starknet Privacy compatibility matrix](https://github.com/star
 - Exact `npm ci --ignore-scripts --no-audit --no-fund` completed in the RC2 `sdk/` directory using the upstream lockfile.
 - `npm run build` passed from the exact RC2 checkout.
 - The fast SDK suite passed `252` tests across `26` files with coverage disabled.
-- The full SDK command ran `28` files. `27` files and `254` tests passed. The five devnet tests failed before setup because the Windows environment has no installed `starknet-devnet` executable (`spawn starknet-devnet ENOENT`). The failure is environment setup, not a mixed SDK revision.
+- The full SDK command ran `28` files. `27` files and `254` tests passed. The five devnet tests remain blocked in the release checkout because the required generated Cairo fixture `target/dev/privacy_Privacy.contract_class.json` is absent. The official `starknet-devnet` `v0.8.0-rc.3` CLI was available through WSL, so this is a missing upstream test-artifact prerequisite, not a mixed SDK revision.
 - The upstream `npm run lint` wrapper reports formatting differences across the pristine release checkout. No upstream source was reformatted or changed.
 - The RC2 proof preflight against the live Mainnet services returned `9` proof facts and `18` `apply_actions` words. It made no Mainnet write.
 
