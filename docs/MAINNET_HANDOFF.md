@@ -253,6 +253,8 @@ The 2026-08-29 refresh estimated only the two declarations, with validation skip
 | `VocapApprovedTarget` declaration | `4.882081279553120160 STRK` |
 | Declaration subtotal | `33.722541433835540256 STRK` |
 
+With the deployed wallet's normal account validation enabled, a follow-up estimate at block `14,019,664` returned `28.782763929127762416 STRK` for the Router declaration and `4.872314589998839920 STRK` for the target declaration, a combined `33.655078519126602336 STRK`. Gas prices can change between blocks, so this is still a current read-only quote rather than an approved final budget.
+
 The Router deployment estimate failed closed because its class is not declared. The target deployment and policy estimates failed closed because the target and Router are not deployed. These are expected read-only pre-write results, not errors to bypass.
 
 Before funding, estimate all final operations in order:
