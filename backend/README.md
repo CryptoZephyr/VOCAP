@@ -26,7 +26,7 @@ Creating the Blueprint provisions free Render resources, subject to Render's fre
 
 Mainnet uses Neon Free PostgreSQL and `.github/workflows/vocap-mainnet-indexer.yml`. The scheduled job invokes the existing `--once` mode in bounded batches, then exits. It uses a restricted runtime credential. A separate migration-owner credential is available only to manually dispatched migration runs.
 
-See [docs/ZERO_COST_MAINNET_BACKEND.md](../docs/ZERO_COST_MAINNET_BACKEND.md) for setup, limits, recovery behavior, and the exact GitHub environment configuration. The protected workflow is configured with the verified Mainnet Router address and deployment block, and runs bounded scheduled catch-up jobs without holding a signer.
+The root README records the public Mainnet addresses and workflow boundary. Keep the detailed fee, recovery, and environment handoff on the deployment machine. The protected workflow is configured with the verified Mainnet Router address and deployment block, and runs bounded scheduled catch-up jobs without holding a signer.
 
 ## Local commands
 
@@ -74,4 +74,4 @@ Replay is idempotent by `(network, router, transaction hash, event index)`. Curs
 
 The backend is part of an active application flow even though it does not hold a signer. A browser wallet and the official privacy SDK build and submit the private `apply_actions` transaction. The backend helper `submitVocapPrivateResult` validates the SDK result, forwards the proof facts and proof to the connected wallet, and returns the wallet-submitted transaction hash. The wallet remains responsible for user approval, signing, and broadcasting.
 
-Use [docs/WALLET_FLOW.md](../docs/WALLET_FLOW.md) for the complete V1 RETURN sequence. Do not add a private key, viewing key, or capability signer to Render. The Render service can index the resulting receipt and expose operational status without taking custody of the capability.
+The V1 RETURN sequence stays in the user-controlled client. Do not add a private key, viewing key, or capability signer to Render. The Render service can index the resulting receipt and expose operational status without taking custody of the capability.

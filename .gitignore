@@ -38,6 +38,7 @@ cairo-auditor.*
 cairo-audit-*
 tmp/
 temp/
+/docs/
 
 # Local reference toolchains
 .tools/
