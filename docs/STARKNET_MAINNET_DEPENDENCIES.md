@@ -36,6 +36,8 @@ The latest read-only refresh on 2026-08-29 reached common block `14,026,607` thr
 
 The newest public preflight reached block `14,026,733` through Lava and `14,026,734` through Cartridge. The frozen Router and target remained undeployed, and a validation-on estimate for the reviewed `43 STRK` allowance approval returned `0.150653541579872337 STRK`. The declaration estimates moved with gas conditions, so the complete sequence still requires a fresh sequential quote immediately before any approved write.
 
+A fresh RC.5 proof preflight at block `14,027,254`, proving block `14,027,244`, again returned `9` proof facts, `18` `apply_actions` words, `304304` proof bytes, and HTTP `200` from both health and both OHTTP-key endpoints. An exploratory comparison compiled immutable RC.2 source at commit `9bfeb8dd35565a2915a0617dff3f649bd5bb891a` with the available dependency tree and produced the same proof shape. Neither check exposed an immutable deployed service revision or image digest.
+
 The current upstream compatibility matrix names `PRIVACY-0.14.3-RC.2` for the transaction prover, discovery service, and SDK row. The selected local SDK remains the immutable `PRIVACY-0.14.3-RC.5` package. The public Mainnet prover reports RPC spec `0.10.3-rc.2`, but that RPC value is not an immutable container digest. The deployed prover and discovery image digests remain unverified. The RC.5 proof-context rehearsal is useful evidence that the live endpoints answered the selected protocol, but it does not establish the deployed image revision or clear the release-family gate.
 
 ## Release boundary
