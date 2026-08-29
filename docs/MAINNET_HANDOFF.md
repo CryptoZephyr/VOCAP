@@ -178,6 +178,7 @@ Do not begin Mainnet signing while any required pre-write gate is open:
 - [x] Freeze Router and target deployment salts and derive their expected addresses before submission.
 - [ ] Obtain immutable prover and discovery revisions or image digests compatible with the selected release family.
 - [ ] Obtain additional Sepolia funding before the exact frozen rehearsal can consume protocol fees. The public faucet checkpoint supplied `5 STRK`, account deployment consumed `0.054521748329982568 STRK`, and the remaining `5.945478251670017432 STRK` is insufficient for seven `2 STRK` pool fees before gas.
+- [ ] Complete the next free Sepolia faucet request after the operator clears its Cloudflare challenge. At this refresh the faucet UI advertises `100 STRK` per 24 hours anonymously or `3,000 STRK` after GitHub sign-in. No additional request was submitted automatically.
 - [x] Generate a real Mainnet proof-context rehearsal using the official RC.5 SDK. This was non-broadcast and used a fresh in-memory viewing key.
 - [ ] Run a fresh sequential fee estimate for the entire final transaction sequence.
 - [ ] Confirm whether the wallet has enough STRK for the approved final estimate and retry buffer. The current balance is above the provisional `106 STRK` planning ceiling, but the final sequential quote and any provider charges remain open.
