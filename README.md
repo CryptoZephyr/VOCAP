@@ -2,7 +2,7 @@
 
 A private STRK20 capability that triggers one approved Starknet action and returns the same value to a fresh private note.
 
-Live demo: not available yet · Video: not available yet · [Docs](#architecture) · Submission: not linked yet
+Live demo: not available yet · Video: not available yet · [Docs](#architecture) · [Security](SECURITY.md) · Submission: not linked yet
 
 There is no frontend screenshot yet. This is the current product flow:
 
