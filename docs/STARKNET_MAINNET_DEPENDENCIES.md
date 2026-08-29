@@ -48,7 +48,7 @@ These are the comparison values for the deployed service images. The live HTTP e
 - Exact `npm ci --ignore-scripts --no-audit --no-fund` completed in the RC2 `sdk/` directory using the upstream lockfile.
 - `npm run build` passed from the exact RC2 checkout.
 - The fast SDK suite passed `252` tests across `26` files with coverage disabled.
-- The full SDK command ran `28` files. `27` files and `254` tests passed. The five devnet tests remain blocked in the release checkout because the required generated Cairo fixture `target/dev/privacy_Privacy.contract_class.json` is absent. The official `starknet-devnet` `v0.8.0-rc.3` CLI was available through WSL, so this is a missing upstream test-artifact prerequisite, not a mixed SDK revision.
+- The full SDK command ran `28` files and passed all `259` tests. The exact upstream lockfile was used with native Scarb `2.17.0` to generate the `privacy_Privacy`, `privacy_MockAMM`, and `privacy_MockSwapExecutor` fixtures. The official `starknet-devnet` `v0.8.0-rc.3` launcher was used for the five devnet tests. This verifies the RC2 client and fixture path without a mixed SDK revision.
 - The upstream `npm run lint` wrapper reports formatting differences across the pristine release checkout. No upstream source was reformatted or changed.
 - The RC2 proof preflight against the live Mainnet services returned `9` proof facts and `18` `apply_actions` words. It made no Mainnet write.
 
@@ -65,11 +65,13 @@ Recorded 2026-08-29 at the RC2 proof refresh:
 - Prover health and OHTTP keys: HTTP `200`
 - Discovery health and OHTTP keys: HTTP `200`
 - Prover JSON-RPC spec: `0.10.3-rc.2`
-- RC2 proof refresh: block `14,037,561`, proving block `14,037,551`, `309680` proof bytes
+- RC2 proof refresh: block `14,040,550`, proving block `14,040,540`, `316432` proof bytes
 
 The protocol responses match RC2, but neither service exposes an immutable image digest or revision. Health, key, and protocol responses do not prove the deployed image tag. The service operator must provide the prover and discovery image digests or immutable revisions before the privacy release-family gate can close.
 
 The latest direct service refresh also returned HTTP `200` from both health endpoints and both OHTTP-key endpoints, with prover spec `0.10.3-rc.2`. The response headers still exposed no immutable digest or revision.
+
+The latest Mainnet public preflight at block `14,040,539`, with an independent head at `14,040,540`, confirmed `SN_MAIN`, the deployed Braavos account, nonce `0x2`, balance `126.443768493564389985 STRK`, pool version `2.0`, a `6 STRK` pool fee, and a `450`-block proof window. Both frozen classes and addresses remain undeclared and undeployed, and pool allowance remains `0`. Validation-on declaration quotes were `29.170380944846550924 STRK` for the Router and `4.947096903101895852 STRK` for the target. The reviewed `43 STRK` approval quote was `0.153978902159965713 STRK`, making the current measurable floor `77.271456750108412489 STRK` after adding the known `42 STRK` protocol component and `1 STRK` capability principal. The full sequential Mainnet requirement remains unavailable until the dependent writes exist.
 
 The configured wallet still has zero pool allowance, and the frozen Router and target classes and addresses are undeclared and undeployed. The proof fee estimate therefore fails closed at the allowance dependency. The declaration-only and approval-only values in the handoff are moving read-only quotes, not the complete sequential Mainnet requirement.
 
