@@ -32,6 +32,8 @@ Recorded 2026-08-29 at Starknet Mainnet block `14,018,608`:
 - Transaction prover RPC spec: `0.10.3-rc.2`
 - OHTTP key responses: `43` bytes from both services
 
+The latest read-only refresh on 2026-08-29 reached common block `14,026,607` through Lava and Cartridge. It still matched `SN_MAIN`, pool version `2.0`, the `6 STRK` fee, and the `450`-block proof window. The configured wallet's pool allowance remained `0`, so the RC.5 proof preflight stopped before a fee quote that depends on approval. Both service health endpoints and both OHTTP-key endpoints returned HTTP `200`, with `43`-byte key responses. Discovery reported a live Mainnet head at block `14,026,635` with `5` seconds of lag. No immutable service revision or image digest was exposed.
+
 The current upstream compatibility matrix names `PRIVACY-0.14.3-RC.2` for the transaction prover, discovery service, and SDK row. The selected local SDK remains the immutable `PRIVACY-0.14.3-RC.5` package. The public Mainnet prover reports RPC spec `0.10.3-rc.2`, but that RPC value is not an immutable container digest. The deployed prover and discovery image digests remain unverified. The RC.5 proof-context rehearsal is useful evidence that the live endpoints answered the selected protocol, but it does not establish the deployed image revision or clear the release-family gate.
 
 ## Release boundary
