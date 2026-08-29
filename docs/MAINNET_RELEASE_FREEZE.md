@@ -1,6 +1,6 @@
 # Mainnet release freeze
 
-This record freezes the static VOCAP production artifacts for review. It does not authorize funding, deployment, or private transactions. Mainnet-dependent addresses, constructor state, fee quotes, and privacy-service compatibility remain open in [MAINNET_READINESS.md](MAINNET_READINESS.md).
+This record freezes the static VOCAP production artifacts for review. The freeze itself did not authorize funding, deployment, or private transactions. The approved Mainnet deployment and proof lifecycle have since completed and are recorded in [MAINNET_HANDOFF.md](MAINNET_HANDOFF.md) and [MAINNET_READINESS.md](MAINNET_READINESS.md). The live privacy services still do not expose immutable image provenance.
 
 ## Source and toolchain
 
@@ -35,5 +35,11 @@ Additional generated artifact:
 - The contract source and static artifacts are frozen for review. Contract tests and backend changes do not alter these production class hashes.
 - The historical Router completed the real Sepolia STRK20 RETURN, succession, and backend indexing sequence. The frozen Router hash differs because it contains the post-review surplus-balance fix, so the exact frozen Router still requires a Sepolia deployment rehearsal.
 - The Mainnet pool address, class hash, version, fee, and proof window were refreshed at block `14,001,956` and are recorded in [STARKNET_MAINNET_DEPENDENCIES.md](STARKNET_MAINNET_DEPENDENCIES.md).
-- The exact Mainnet account, deployment, policy, final fee, proof, and service-image evidence is still required.
+- The exact Mainnet account, deployment, policy, final fee, and proof evidence are recorded in [MAINNET_HANDOFF.md](MAINNET_HANDOFF.md). The service-image digest or revision remains unavailable from the live endpoints.
 - No private key, viewing key, RPC credential, or wallet recovery secret belongs in this record or repository.
+
+## Post-deployment status
+
+The frozen Router and approved target were declared and deployed through the UDC at their deterministic Mainnet addresses. Policy `1` was created and read back with the Mainnet STRK token, amount `1 STRK`, selector `premium_action`, and empty target calldata. The approved RC2 lifecycle then finalized seven private-pool calls and produced three successful Router executions, with the target action count advancing from `0` to `3`.
+
+The exact RC2 client is `PRIVACY-0.14.3-RC.2` at commit `9bfeb8dd35565a2915a0617dff3f649bd5bb891a`. The complete SDK suite passed `259` tests across `28` files with the RC2-compatible Devnet launcher. The measured operator-wallet debit was `80.524484515641070364 STRK`, leaving `45.919283977923319621 STRK`. The full transaction, fee, and service evidence remains in [MAINNET_HANDOFF.md](MAINNET_HANDOFF.md).
