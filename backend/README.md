@@ -26,7 +26,7 @@ Creating the Blueprint provisions free Render resources, subject to Render's fre
 
 Mainnet uses Neon Free PostgreSQL and `.github/workflows/vocap-mainnet-indexer.yml`. The scheduled job invokes the existing `--once` mode in bounded batches, then exits. It uses a restricted runtime credential. A separate migration-owner credential is available only to manually dispatched migration runs.
 
-See [docs/ZERO_COST_MAINNET_BACKEND.md](../docs/ZERO_COST_MAINNET_BACKEND.md) for setup, limits, recovery behavior, and the exact GitHub environment configuration. The workflow remains inactive until the verified Mainnet Router address and deployment block are configured.
+See [docs/ZERO_COST_MAINNET_BACKEND.md](../docs/ZERO_COST_MAINNET_BACKEND.md) for setup, limits, recovery behavior, and the exact GitHub environment configuration. The protected workflow is configured with the verified Mainnet Router address and deployment block, and runs bounded scheduled catch-up jobs without holding a signer.
 
 ## Local commands
 

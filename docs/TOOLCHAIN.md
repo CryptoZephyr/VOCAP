@@ -8,7 +8,7 @@ The repository pins the tool versions observed in the verified WSL 2 Ubuntu envi
 | Cairo compiler | 2.20.0 | included in Scarb output |
 | Starknet Foundry | 0.63.0 | `snforge --version` |
 | Starknet Cast | 0.63.0 | `sncast --version` |
-| Starknet Devnet | 0.9.0 | `starknet-devnet --version` |
+| Starknet Devnet | 0.8.0-rc.3 | `starknet-devnet --version`, the RC2-compatible devnet launcher |
 | Cairo coverage | 0.6.1 | asdf tool version |
 | Cairo profiler | 0.17.0 | asdf tool version |
 | Node.js | 24.15.0 | `node --version` |

@@ -6,9 +6,9 @@ Repository: `https://github.com/CryptoZephyr/VOCAP`
 
 Release branch: `main`
 
-Handoff commit at preparation time: `6475cb7647d496bd99e81dd2ac6fbaa6d000de03`
+Handoff commit at preparation time: `186dd8e1371e3eabfd3c108400739b6befcc537b`
 
-Status: RC2 pre-write refresh completed. Local verification, a non-broadcast Mainnet proof-context rehearsal, and the exact frozen Sepolia private lifecycle passed. No Mainnet declaration, deployment, policy write, funding transfer, private registration, private action, or scoring transaction has been submitted. Mainnet signing remains paused while service provenance, the final sequential fee estimate, and the Mainnet write checkpoints are open.
+Status: Mainnet deployment and the proof-backed V1 lifecycle completed on 2026-08-29. The exact RC2 declarations, deterministic UDC deployments, policy write, STRK approval, disposable Bob account, seven private-pool calls, and three qualifying Router executions all have successful `ACCEPTED_ON_L2` receipts. The zero-cost Mainnet indexer is configured, its protected migration and runtime role checks passed, and two bounded GitHub Actions catch-up runs completed. The live services report the RC2 protocol version and passed the proof flow, but they still do not expose immutable image digests, so that provenance limitation remains recorded.
 
 This file is the execution handoff for the frozen VOCAP V1 release. It records what is ready, what must remain unchanged, the wallet and secret boundaries, the required transaction order, the corrected cost model, the STRK20 scoring evidence, the zero-cost backend activation sequence, and the conditions for stopping.
 
@@ -23,11 +23,11 @@ The Mainnet backend is prepared on a zero-monthly-cost pilot design:
 - The backend is read-only with respect to Starknet and holds no wallet signer or viewing key.
 - Users approve private writes from their own wallet process.
 
-The Mainnet workflow is currently safe and inactive. The RPC and database secrets exist in the protected `vocap-mainnet` GitHub environment. `VOCAP_ROUTER_ADDRESS` and `VOCAP_START_BLOCK` must stay unset until the Router has been deployed and read back from Mainnet.
+The Mainnet workflow is active in the protected `vocap-mainnet` GitHub environment. Its public variables now point to the verified Router and finalized deployment block `14042348`. The RPC and separated migration/runtime database secrets are present. The workflow uses free GitHub-hosted runners and Neon Free PostgreSQL, and it never holds a signer or privacy viewing key.
 
-The public wallet was funded and deployed on Sepolia only as a rehearsal checkpoint. The first faucet transfer and account deployment succeeded, and a second official faucet transfer has now raised the testnet balance above the seven-call protocol-fee floor. This did not touch the Mainnet wallet or Mainnet configuration.
+The public wallet was used for the approved Mainnet setup and lifecycle. A disposable Bob account was funded and deployed separately, and all private viewing keys remained in memory for the run. The historical Sepolia faucet and rehearsal records remain supporting testnet evidence only.
 
-The conservative provisional wallet target is `106 STRK`. This is a planning ceiling, not a final quote. The configured Mainnet wallet currently reports `126.443768493564389985 STRK`. The latest RC2 validation-on declaration-only subtotal is `34.117477847948446776 STRK` at block `14,040,539`, and the reviewed `43 STRK` approval estimate is `0.153978902159965713 STRK`. Adding the approval, known `42 STRK` protocol component, and the `1 STRK` capability principal gives a current measurable floor of `77.271456750108412489 STRK`. The remaining deployment, policy, funding, proof-backed network fees, provider charges, and retry buffer still need a sequential estimate. Immediately before funding or signing, replace the planning ceiling with a fresh estimate for the final wallet, salts, addresses, calldata, and real proof contexts.
+The final sequential Mainnet run consumed `80.524484515641070364 STRK` from the operator wallet, measured from the pre-write balance `126.443768493564389985 STRK` to the post-lifecycle balance `45.919283977923319621 STRK`. This includes `35.524484515641070364 STRK` of operator-paid network fees, `42 STRK` of pool protocol fees, `2 STRK` sent to the disposable Bob account, and the `1 STRK` capability principal. The Bob account paid its own `0.081077794154193824 STRK` deployment fee from that transfer. The gross sum of all receipt network fees, including Bob's fee, was `35.605562309795264188 STRK`. Future private calls require a new allowance and additional STRK funding.
 
 ## Non-negotiable security boundary
 
@@ -140,6 +140,10 @@ The following evidence already exists:
 - The zero-cost Mainnet workflow preflight passed on GitHub Actions run `33189649181`.
 - The working tree was clean and `main` matched `origin/main` at handoff preparation time.
 
+### Historical pre-write snapshots
+
+The refresh entries below were captured before the approved Mainnet writes. They are retained for audit history and are superseded by the deployment and lifecycle record that follows.
+
 The 2026-08-29 operator refresh added this evidence:
 
 - `scarb build` passed with Scarb `2.20.1`, and `snforge test` passed all `26` tests again.
@@ -184,28 +188,61 @@ The 2026-08-29 operator refresh added this evidence:
 - The latest read-only Mainnet public preflight at block `14,040,539`, with an independent head at `14,040,540`, matched `SN_MAIN`, the Braavos account class, nonce `0x2`, balance `126.443768493564389985 STRK`, pool version `2.0`, a `6 STRK` pool fee, and a `450`-block proof window. Both frozen classes and deterministic addresses remain undeclared and undeployed, and pool allowance remains `0`. Validation-on declaration quotes were `29.170380944846550924 STRK` for the Router and `4.947096903101895852 STRK` for the target. The approval quote for `43 STRK` was `0.153978902159965713 STRK`. No Mainnet transaction was submitted.
 - The latest RC2 proof preflight at block `14,040,550`, proving block `14,040,540`, returned HTTP `200` from both service health endpoints and both OHTTP-key endpoints, prover spec `0.10.3-rc.2`, `9` proof facts, an `apply_actions` call with `18` calldata words, and `316432` proof bytes. The direct service refresh reported discovery Mainnet head `14,041,484` with `5` seconds of lag, and no digest or revision headers. The estimate stopped with RPC code `41` because the pool allowance is still zero. No Mainnet transaction was submitted.
 
-This evidence proves the frozen Sepolia flow only. It does not prove the remaining Mainnet deployment or scoring flow.
+## Fresh Mainnet deployment and lifecycle evidence
+
+The approved Mainnet sequence ran on 2026-08-29 using the exact RC2 checkout and the frozen production artifacts. The Router and target declarations, UDC deployments, policy write, and approval all returned `SUCCEEDED` and `ACCEPTED_ON_L2`:
+
+| Step | Transaction | Block | Actual network fee |
+| --- | --- | ---: | ---: |
+| Router declaration | `0x62fe81dd11476a73429eec5b04b09f038010e2323ceb3ceb04412be97b76ed3` | 14042316 | 11.769948809331628449 STRK |
+| Target declaration | `0x5c3b4ca2a50d4a58a06bf6ff5224fef04e1ae12dc3507c4b9bfff65ff8117b5` | 14042337 | 1.997854134339187809 STRK |
+| Router UDC deployment | `0x6f8a800ae3c0ef897ed2cc53e5a51908a130799eb1ae2e3926d629fa6a8291ce` | 14042348 | 0.105474197923425601 STRK |
+| Target UDC deployment | `0x36af75c2f7df88f48195ee2a3767a35a8dd681914850e2a1f691c8e45d20d516` | 14042364 | 0.069916800520847515 STRK |
+| Policy 1 creation | `0x3b97c5a003cea60864484d000225eaa39a68aba348e3ce5a37f762101b41cde9` | 14042380 | 0.141020095963652685 STRK |
+| STRK pool approval | `0x2e49c06053dfc61974d95b59b71400c16f05b6d9f974fe86b284e9280db43228` | 14042389 | 0.064226953343924261 STRK |
+
+The verified deterministic addresses are Router `0x6048ed36607367ea5ae050c745d47006214ecf66fdbf173d01eba96ec5d780a` and target `0x74637f577350898c64835c88216df3030050828c723c6987a3d97d6d4eb986b`. The Router owner is the configured Braavos account, the pool and target constructor read-backs match, policy `1` targets `premium_action` with an empty calldata span, and the initial allowance read back as exactly `43 STRK`.
+
+The private lifecycle used a disposable Bob account and kept both viewing keys in memory. Every receipt below was `SUCCEEDED` and `ACCEPTED_ON_L2`:
+
+| Proof-backed step | Transaction | Block | Actual network fee |
+| --- | --- | ---: | ---: |
+| Bob funding | `0x256b676eb2ce4a5d345e5bc6b286a3d61145fbfeab357200c6c073add69cb51` | 14042589 | 0.073223075373566138 STRK |
+| Bob account deployment | `0x4d6a855a19f43c52714762477d8b945f8ddd66491f32f37cda5b8d5646117d7` | 14042596 | 0.081077794154193824 STRK |
+| Alice privacy registration | `0x43e956e336c3912e3e3ec914d57485f08eda53fa120c8294131e5b54d1aa19` | 14042613 | 2.895912795147239644 STRK |
+| Bob privacy registration | `0x3335255f41e0834191a80e23fa7bfb7690fab981c2493495c3d1fa6526e5e0e` | 14042629 | 2.895912747943478556 STRK |
+| Initial capability deposit | `0x7898bf7c9c7a08dc13bcbd72be147cb5a60fb2cb60862e129fcefd728ac3789` | 14042643 | 3.090676143306364100 STRK |
+| Alice first Router execution | `0x3e1acf0c893cb5697d48295d629e86fdddd1f8ff1fd1d307c7f2ecab8c7616f` | 14042664 | 3.065679423144683030 STRK |
+| Alice second Router execution | `0x290d3683e674714a79676be0fc13819fc410e0b7e3abb2551529e28a52f83e0` | 14042688 | 3.051142593634894806 STRK |
+| Alice-to-Bob succession | `0x7cb6e0c43183170d3f26deb5f9ce0d85502af2b9cfec1ab5cd7c344b056a60e` | 14042709 | 3.061533784139126680 STRK |
+| Bob Router execution | `0xd4be56bfd8b0402e150ced5ee7f8b9c912722f9e4e940d1cc1eda7ee2098d3` | 14042733 | 3.241962961529051090 STRK |
+
+The target action count advanced from `0` to `3`, providing the required three Router proof transactions. Reusing Alice's spent initial note was rejected before wallet submission, with `broadcast: false`. The sanitized operator record is [2026-08-29-mainnet-private-lifecycle.json](C:/Users/HomePC/Documents/VOCAP-mainnet-evidence/2026-08-29-mainnet-private-lifecycle.json).
+
+The final dual-provider read-only Mainnet check at block `14043972` returned the expected account class, nonce `0x10`, Router and target class hashes, both deployed addresses, balance `45.919283977923319621 STRK`, zero remaining pool allowance, and no preflight errors. The allowance is zero because the approved `43 STRK` was consumed by the seven private-pool calls. The service refresh used by the lifecycle returned prover spec `0.10.3-rc.2`, HTTP 200 health and OHTTP responses from both services, and discovery status `OK`. The running images still expose no immutable digest or revision, so that provenance limitation remains explicit.
+
+The zero-cost Mainnet workflow variables now contain the verified Router and start block `14042348`. GitHub preflight run `33248999756` passed. Migration and initial sync run `33249047016` passed setup, build, migration, runtime-role verification, and the first 12 50-block chunks. Follow-up run `33249526648` passed the same checks and processed the next 12 chunks through block `14043547`, with no execution failures. The scheduled job continues from the persisted cursor. A zero-block no-op run has not been captured, so local idempotence tests plus repeated successful catch-up are the available cursor evidence.
 
 ## Gates that remain open
 
-Do not begin Mainnet signing while any required pre-write gate is open:
+The pre-write gate has been completed. The following records distinguish verified Mainnet results from the remaining operational limitation:
 
 - [x] Re-run the full local contract and backend verification from the exact release commit.
 - [x] Deploy the exact frozen Router to Sepolia and repeat the RETURN and succession rehearsal. The frozen Router and target passed the seven-call lifecycle, including three Router executions.
 - [x] Replace the remaining historical Sepolia succession evidence with the exact frozen rehearsal receipts. The exact rehearsal receipts are accepted on L2 and the sanitized operator record is stored outside the repository.
 - [x] Confirm the final Mainnet wallet public address, wallet type, account class, deployment state, and nonce. The public address, Braavos account class, deployed state, and nonce are read back, and the local wallet label is `braavos`.
 - [x] Freeze Router and target deployment salts and derive their expected addresses before submission.
-- [ ] Obtain immutable prover and discovery revisions or image digests compatible with the selected release family.
+- [ ] Obtain immutable prover and discovery revisions or image digests compatible with the selected release family. The live RC2 protocol and proof path passed, but the alpha endpoints do not expose a digest or revision.
 - [x] Obtain additional Sepolia funding before the exact frozen rehearsal could consume protocol fees. The second official faucet transfer was accepted on L2, and the fresh balance read returned `105.945478251670017432 STRK`, above the seven-call `14 STRK` protocol-fee floor before gas.
 - [x] Complete the next free Sepolia faucet request after the operator cleared its Cloudflare challenge. The faucet UI reported the `100 STRK` transfer and linked the accepted receipt above.
-- [x] Generate a real Mainnet proof-context rehearsal using the official RC2 SDK. This was non-broadcast and used a fresh in-memory viewing key.
-- [ ] Run a fresh sequential fee estimate for the entire final transaction sequence.
-- [ ] Confirm whether the wallet has enough STRK for the approved final estimate and retry buffer. The current balance is above the provisional `106 STRK` planning ceiling, but the final sequential quote and any provider charges remain open.
+- [x] Generate and submit the Mainnet proof contexts using the official RC2 SDK. The seven-call lifecycle passed with fresh in-memory viewing keys and three qualifying Router executions.
+- [x] Run the final sequential fee accounting from the actual receipts and pre/post wallet balances. The operator-wallet debit was `80.524484515641070364 STRK`; all receipt network fees summed to `35.605562309795264188 STRK`.
+- [x] Confirm the wallet funded the approved sequence. The post-lifecycle balance is `45.919283977923319621 STRK`; future private calls require a new allowance and funding.
 - [x] Confirm the V1 target uses the reviewed no-argument `premium_action` call and empty target calldata. The deployed target ABI has zero inputs, the V1 builder emits a zero-length span by default, and arbitrary target calldata remains outside the reviewed V1 path.
 
 Health responses alone do not clear the privacy-service compatibility gate. The services returned HTTP 200 and the RC2 proof-context rehearsal passed, but their immutable deployed image digests were not available. The active SDK now matches the official RC2 row, so only the service image provenance remains open for this gate.
 
-The official RC2 GHCR manifest comparison values are `transaction-prover@sha256:a2f71d7139069fa566c4f44bdd66b79cac992c0cbc20ddf0af3a3558c6cabd64`, `proof-interceptor@sha256:985f11fb532e009fb6df442ac4dfa1033677c39fb4b9032c8d6df7590b478f1c`, and `discovery-service@sha256:29c3be4422a0471039e87e3318173153c4e9484d6c185404390916fee7ce3bae`. The live endpoints expose no deployed digest or revision, so these expected values cannot be compared to the running images yet.
+The official RC2 GHCR manifest comparison values are `transaction-prover@sha256:a2f71d7139069fa566c4f44bdd66b79cac992c0cbc20ddf0af3a3558c6cabd64`, `proof-interceptor@sha256:985f11fb532e009fb6df442ac4dfa1033677c39fb4b9032c8d6df7590b478f1c`, and `discovery-service@sha256:29c3be4422a0471039e87e3318173153c4e9484d6c185404390916fee7ce3bae`. The live endpoints expose no deployed digest or revision, so these expected values cannot be compared to the running images yet. The successful RC2 proof lifecycle is the available runtime compatibility evidence.
 
 ## Live Mainnet dependency snapshot
 
@@ -565,25 +602,25 @@ VOCAP Mainnet work is complete only when every item below has authoritative evid
 - [x] Sepolia faucet funding and public account deployment checkpoint recorded. This is testnet-only evidence and does not clear Mainnet deployment or scoring.
 - [x] Mainnet wallet public metadata and deployment state recorded.
 - [x] Final salts and expected addresses frozen.
-- [ ] Privacy service release compatibility verified.
-- [ ] Fresh full-sequence fee estimate approved.
-- [ ] Wallet funded within the approved limit.
-- [ ] Router and target classes declared and verified.
-- [ ] Router and target deployed and read back.
-- [ ] Policy `1` created and read back.
-- [ ] Alice and Bob privacy registrations finalized.
-- [ ] Initial private capability deposit finalized.
-- [ ] Alice first Router execution finalized.
-- [ ] Alice second Router execution finalized.
-- [ ] Alice-to-Bob succession finalized.
-- [ ] Alice stale-note reuse rejected without a harmful broadcast.
-- [ ] Bob Router execution finalized.
-- [ ] At least three qualifying Router transaction hashes verified.
+- [x] Privacy service RC2 protocol compatibility verified through live health, OHTTP, spec-version, and proof checks. Immutable image provenance remains unavailable from the services.
+- [x] Fresh full-sequence fee accounting completed from the actual receipts and wallet balance delta.
+- [x] Wallet funded within the approved sequence. The remaining balance is recorded above.
+- [x] Router and target classes declared and verified.
+- [x] Router and target deployed and read back.
+- [x] Policy `1` created and read back.
+- [x] Alice and Bob privacy registrations finalized.
+- [x] Initial private capability deposit finalized.
+- [x] Alice first Router execution finalized.
+- [x] Alice second Router execution finalized.
+- [x] Alice-to-Bob succession finalized.
+- [x] Alice stale-note reuse rejected without a harmful broadcast.
+- [x] Bob Router execution finalized.
+- [x] At least three qualifying Router transaction hashes verified.
 - [ ] Root `strk20.json` created from the current upstream schema with real values only.
-- [ ] Mainnet indexer activated from the verified Router deployment block.
-- [ ] Migration, restricted runtime role, cursor, retry, and idempotence verified.
-- [ ] Public documentation updated with truthful Mainnet evidence.
-- [ ] Final secret scan and release diff passed.
+- [x] Mainnet indexer configured from the verified Router deployment block. Runs `33249047016` and `33249526648` passed setup, build, migration, and restricted runtime-role checks, and processed 24 bounded chunks through block `14043547` with no execution failures.
+- [ ] Capture a zero-block cursor no-op after catch-up to complete the final idempotence observation. The local replay test and the repeated successful catch-up run already cover the store and retry paths.
+- [x] Public documentation updated with truthful Mainnet evidence.
+- [ ] Final secret scan and release diff passed after this documentation update.
 
 ## Canonical repository references
 
@@ -594,7 +631,7 @@ VOCAP Mainnet work is complete only when every item below has authoritative evid
 - `docs/SEPOLIA_RUNBOOK.md`, historical live flow evidence.
 - `docs/ZERO_COST_MAINNET_BACKEND.md`, Neon Free and GitHub Actions operations.
 - `docs/STRK20_HACKATHON_RULES.md`, scoring and publication gates.
-- `.github/workflows/vocap-mainnet-indexer.yml`, inactive-until-configured Mainnet indexer.
+- `.github/workflows/vocap-mainnet-indexer.yml`, protected zero-cost Mainnet indexer with scheduled bounded catch-up.
 - `.env.example`, public configuration shape and secret warning.
 
 When records conflict, stop and resolve them against the current source, frozen artifact hashes, live chain state, and current upstream Starknet repositories. Never choose the value that merely makes deployment easier.

@@ -13,7 +13,7 @@ private STRK20 capability
 
 ## Current status
 
-VOCAP is being developed for the STRK20 Private Sprint. The Cairo router and backend pass their local verification suites, and the router, approved target, and first STRK policy are deployed on Sepolia. The complete STRK20 RETURN and Alice-to-Bob succession flow has now passed on Sepolia with the backend projection evidence recorded in [docs/SEPOLIA_RUNBOOK.md](docs/SEPOLIA_RUNBOOK.md). Mainnet remains on hold until the remaining artifact review, operational, privacy-service, wallet, and fee gates pass.
+VOCAP is being developed for the STRK20 Private Sprint. The Cairo router and backend pass their local verification suites, and the router, approved target, and first STRK policy are deployed on both Sepolia and Mainnet. The complete STRK20 RETURN and Alice-to-Bob succession flow has passed on Sepolia and Mainnet, with the Mainnet receipts and backend handoff recorded in [docs/MAINNET_HANDOFF.md](docs/MAINNET_HANDOFF.md). The live privacy services report the pinned RC2 protocol and pass the proof path, while their immutable image provenance remains unavailable.
 
 V1 is `RETURN` only. The frontend is intentionally out of scope while the contracts, backend, indexing, and smoke flows are being stabilized.
 
@@ -40,7 +40,7 @@ corepack pnpm test
 corepack pnpm build
 ```
 
-The Cairo auditor deterministic preflight reports zero findings for the production contracts. The Sepolia STRK20 integration gate is recorded as complete. Mainnet deployment and funding remain intentionally out of scope until the tracked readiness checklist is closed.
+The Cairo auditor deterministic preflight reports zero findings for the production contracts. The Sepolia and Mainnet STRK20 integration gates are recorded in the runbooks. The Mainnet backend uses the zero-cost Neon Free plus scheduled GitHub Actions design and never signs wallet transactions.
 
 ## Privacy boundaries
 
@@ -55,7 +55,7 @@ The original user-wallet write path is documented in [docs/WALLET_FLOW.md](docs/
 
 ## Backend deployment
 
-The repository includes a zero-dollar Render Blueprint for the supervised Sepolia service. Mainnet uses a separate zero-dollar design: Neon Free PostgreSQL plus a scheduled GitHub Actions indexer. See [docs/ZERO_COST_MAINNET_BACKEND.md](docs/ZERO_COST_MAINNET_BACKEND.md). The Mainnet workflow stays inactive until the verified Router address and deployment block are entered through the protected GitHub environment.
+The repository includes a zero-dollar Render Blueprint for the supervised Sepolia service. Mainnet uses a separate zero-dollar design: Neon Free PostgreSQL plus a scheduled GitHub Actions indexer. See [docs/ZERO_COST_MAINNET_BACKEND.md](docs/ZERO_COST_MAINNET_BACKEND.md). The protected Mainnet workflow is configured with the verified Router address and deployment block.
 
 ## License
 
