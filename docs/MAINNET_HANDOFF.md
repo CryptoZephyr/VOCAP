@@ -149,6 +149,7 @@ The 2026-08-29 operator refresh added this evidence:
 - An independent Mainnet RPC read through Cartridge at block `14,019,218` returned the same chain ID and exact STRK balance as the Lava read.
 - A second independent Cartridge read at block `14,019,330` returned the configured pool class hash, the `6 STRK` protocol fee, and the `450`-block proof-validity window.
 - The latest dual-provider read through Lava and Cartridge at block `14,020,957` again matched the `SN_MAIN` chain ID, the Braavos account class, the exact `126.443768493564389985 STRK` balance, the `6 STRK` pool fee, and the `450`-block proof-validity window. Both frozen deterministic addresses still have no deployed class at this refresh block.
+- A fresh dual-provider read at common block `14,022,188` again matched the `SN_MAIN` chain ID, the Braavos account class, nonce `0x2`, the exact `126.443768493564389985 STRK` balance, the `6 STRK` pool fee, the `450`-block proof-validity window, and pool version `2.0`. The configured Lava head was `14,022,189` and the independent Cartridge head was `14,022,194`; both frozen deterministic addresses still had no deployed class at the common read block.
 - The live Mainnet refresh at block `14,018,608` confirmed chain `SN_MAIN`, the frozen STRK20 pool address, pool fee `6 STRK`, and proof-validity window `450` blocks.
 - The frozen salts derived expected Router `0x6048ed36607367ea5ae050c745d47006214ecf66fdbf173d01eba96ec5d780a` and target `0x74637f577350898c64835c88216df3030050828c723c6987a3d97d6d4eb986b` through the unique UDC path. Both deployment address fields remain blank until a write is approved.
 - A fresh Cartridge Mainnet read at block `14,019,437` confirmed both expected deterministic addresses are still undeployed.
@@ -157,6 +158,7 @@ The 2026-08-29 operator refresh added this evidence:
 - The prover health endpoint returned HTTP `200`, JSON-RPC spec `0.10.3-rc.2`, and a `43`-byte OHTTP key response. Discovery health returned HTTP `200`, `status: OK`, Mainnet chain head `14,018,643`, and about `5` seconds of lag. The live image digests are still not exposed by either service.
 - A final read-only service refresh remained healthy: both health endpoints returned HTTP `200`, both OHTTP key responses were `43` bytes, and discovery reported Mainnet chain head `14,019,416` with about `5` seconds of lag. This refresh still exposed no immutable image digest.
 - The latest service refresh returned prover health HTTP `200`, prover JSON-RPC spec `0.10.3-rc.2`, discovery health HTTP `200` with status `OK`, discovery chain head `14,021,117`, and about `5` seconds of lag. Both OHTTP key responses remained `43` bytes, and no immutable image digest or revision was exposed.
+- A fresh service refresh returned prover health HTTP `200`, prover JSON-RPC spec `0.10.3-rc.2`, discovery health HTTP `200` with status `OK`, discovery chain head `14,022,203`, and `6` seconds of lag. Both OHTTP key responses were `43` bytes, and no immutable image digest or revision was exposed.
 - The corresponding alpha-Sepolia prover and discovery hosts are reachable for the pending testnet rehearsal. Sepolia prover health and JSON-RPC spec returned `200` and `0.10.3-rc.2`, discovery health returned `200` with a live chain head, and both OHTTP key responses were `43` bytes. These hosts are not substituted into the Mainnet environment, and they still do not expose immutable image digests.
 - An initial read-only Sepolia check at block `14,205,377` found the same public wallet address with `1 STRK` and no deployed account class. This was the pre-funding state.
 - The candidate historical Sepolia pool read at block `14,205,393` returned its known class hash, a `2 STRK` protocol fee, and a `450`-block proof window. The initial `1 STRK` testnet balance could not cover even one pool protocol-fee call, before account, gas, or contract deployment costs.
@@ -189,7 +191,7 @@ Health responses alone do not clear the privacy-service compatibility gate. The 
 
 ## Live Mainnet dependency snapshot
 
-The latest read-only refresh used Starknet Mainnet block `14,020,957` on 2026-08-29:
+The latest read-only refresh used common Starknet Mainnet block `14,022,188` on 2026-08-29:
 
 | Item | Observed value |
 | --- | --- |
