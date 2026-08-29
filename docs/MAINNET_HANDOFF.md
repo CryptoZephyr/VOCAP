@@ -616,7 +616,8 @@ VOCAP Mainnet work is complete only when every item below has authoritative evid
 - [x] Alice stale-note reuse rejected without a harmful broadcast.
 - [x] Bob Router execution finalized.
 - [x] At least three qualifying Router transaction hashes verified.
-- [ ] Root `strk20.json` created from the current upstream schema with real values only.
+- [x] Root `strk20.json` created from the current upstream schema with the three verified Mainnet proof hashes and both deployed contract addresses. The upstream-required public demo and three-minute video remain separate scoring gates until real URLs exist.
+- [ ] Supply a real public demo URL and three-minute demo video for the STRK20 scoring submission.
 - [x] Mainnet indexer configured from the verified Router deployment block. Runs `33249047016`, `33249526648`, and `33251549194` passed setup, build, migration where applicable, and restricted runtime-role checks, and processed 36 bounded chunks through block `14044147` with no execution failures.
 - [ ] Capture a zero-block cursor no-op after catch-up to complete the final idempotence observation. The local replay test and the repeated successful catch-up run already cover the store and retry paths.
 - [x] Public documentation updated with truthful Mainnet evidence.
