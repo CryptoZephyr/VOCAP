@@ -144,6 +144,7 @@ The 2026-08-29 operator refresh added this evidence:
 - Backend typecheck, build, and the default Vitest run passed. The default run reported `39` passed and `1` skipped because the PostgreSQL test is guarded without a URL.
 - The forced PostgreSQL integration test passed `1` test against the local `vocap_test` database.
 - The Mainnet wallet read back as address `0x075f37debf547892cfcd1fa0e4d383a6cdec6b791dd8805078bf7ae65151f964`, account class `0x3957f9f5a1cbfe918cedc2015c85200ca51a5f7506ecb6de98a5207b759bf8a`, deployed state `true`, nonce `0x2`, and balance `126.443768493564389985 STRK`. The account class matches Braavos and the local wallet label is now corrected to `braavos`.
+- An independent Mainnet RPC read through Cartridge at block `14,019,218` returned the same chain ID and exact STRK balance as the Lava read.
 - The live Mainnet refresh at block `14,018,608` confirmed chain `SN_MAIN`, the frozen STRK20 pool address, pool fee `6 STRK`, and proof-validity window `450` blocks.
 - The frozen salts derived expected Router `0x6048ed36607367ea5ae050c745d47006214ecf66fdbf173d01eba96ec5d780a` and target `0x74637f577350898c64835c88216df3030050828c723c6987a3d97d6d4eb986b` through the unique UDC path. Both deployment address fields remain blank until a write is approved.
 - A real RC.5 SDK proof-context rehearsal completed against the live Mainnet prover and discovery services using an in-memory viewing key. The prover returned `9` proof facts, `18` output words, and an `apply_actions` call. No transaction was broadcast and no viewing key was persisted.
