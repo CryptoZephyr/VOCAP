@@ -202,6 +202,8 @@ Do not begin Mainnet signing while any required pre-write gate is open:
 
 Health responses alone do not clear the privacy-service compatibility gate. The services returned HTTP 200 and the RC2 proof-context rehearsal passed, but their immutable deployed image digests were not available. The active SDK now matches the official RC2 row, so only the service image provenance remains open for this gate.
 
+The official RC2 GHCR manifest comparison values are `transaction-prover@sha256:a2f71d7139069fa566c4f44bdd66b79cac992c0cbc20ddf0af3a3558c6cabd64`, `proof-interceptor@sha256:985f11fb532e009fb6df442ac4dfa1033677c39fb4b9032c8d6df7590b478f1c`, and `discovery-service@sha256:29c3be4422a0471039e87e3318173153c4e9484d6c185404390916fee7ce3bae`. The live endpoints expose no deployed digest or revision, so these expected values cannot be compared to the running images yet.
+
 ## Live Mainnet dependency snapshot
 
 The latest read-only refresh used common Starknet Mainnet block `14,022,188` on 2026-08-29:

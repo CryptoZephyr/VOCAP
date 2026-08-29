@@ -31,6 +31,18 @@ The upstream matrix says that components in one row are tested together and must
 
 Source: [official Starknet Privacy compatibility matrix](https://github.com/starkware-libs/starknet-privacy#compatibility-matrix).
 
+## Immutable RC2 image references
+
+The public GHCR manifests for the RC2 service tags resolved on 2026-08-29 to these immutable digests:
+
+| Image | Expected manifest digest |
+| --- | --- |
+| `transaction-prover:PRIVACY-0.14.3-RC.2` | `sha256:a2f71d7139069fa566c4f44bdd66b79cac992c0cbc20ddf0af3a3558c6cabd64` |
+| `proof-interceptor:PRIVACY-0.14.3-RC.2` | `sha256:985f11fb532e009fb6df442ac4dfa1033677c39fb4b9032c8d6df7590b478f1c` |
+| `discovery-service:PRIVACY-0.14.3-RC.2` | `sha256:29c3be4422a0471039e87e3318173153c4e9484d6c185404390916fee7ce3bae` |
+
+These are the comparison values for the deployed service images. The live HTTP endpoints expose no digest or immutable revision, so the service gate cannot be marked verified until the operator supplies the deployed references.
+
 ## RC2 verification
 
 - Exact `npm ci --ignore-scripts --no-audit --no-fund` completed in the RC2 `sdk/` directory using the upstream lockfile.
