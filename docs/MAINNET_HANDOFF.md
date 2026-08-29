@@ -8,7 +8,7 @@ Release branch: `main`
 
 Handoff commit at preparation time: `186dd8e1371e3eabfd3c108400739b6befcc537b`
 
-Status: Mainnet deployment and the proof-backed V1 lifecycle completed on 2026-08-29. The exact RC2 declarations, deterministic UDC deployments, policy write, STRK approval, disposable Bob account, seven private-pool calls, and three qualifying Router executions all have successful `ACCEPTED_ON_L2` receipts. The zero-cost Mainnet indexer is configured, its protected migration and runtime role checks passed, and two bounded GitHub Actions catch-up runs completed. The live services report the RC2 protocol version and passed the proof flow, but they still do not expose immutable image digests, so that provenance limitation remains recorded.
+Status: Mainnet deployment and the proof-backed V1 lifecycle completed on 2026-08-29. The exact RC2 declarations, deterministic UDC deployments, policy write, STRK approval, disposable Bob account, seven private-pool calls, and three qualifying Router executions all have successful `ACCEPTED_ON_L2` receipts. The zero-cost Mainnet indexer is configured, its protected migration and runtime role checks passed, and three bounded GitHub Actions catch-up runs completed through block `14044147`. The live services report the RC2 protocol version and passed the proof flow, but they still do not expose immutable image digests, so that provenance limitation remains recorded.
 
 This file is the execution handoff for the frozen VOCAP V1 release. It records what is ready, what must remain unchanged, the wallet and secret boundaries, the required transaction order, the corrected cost model, the STRK20 scoring evidence, the zero-cost backend activation sequence, and the conditions for stopping.
 
@@ -221,7 +221,7 @@ The target action count advanced from `0` to `3`, providing the required three R
 
 The final dual-provider read-only Mainnet check at block `14043972` returned the expected account class, nonce `0x10`, Router and target class hashes, both deployed addresses, balance `45.919283977923319621 STRK`, zero remaining pool allowance, and no preflight errors. The allowance is zero because the approved `43 STRK` was consumed by the seven private-pool calls. The service refresh used by the lifecycle returned prover spec `0.10.3-rc.2`, HTTP 200 health and OHTTP responses from both services, and discovery status `OK`. The running images still expose no immutable digest or revision, so that provenance limitation remains explicit.
 
-The zero-cost Mainnet workflow variables now contain the verified Router and start block `14042348`. Initial preflight run `33248999756` passed, and final preflight run `33251420976` passed against release commit `a81fdac3cf9bb7cff4ede961b7925aae162a0187`. Migration and initial sync run `33249047016` passed setup, build, migration, runtime-role verification, and the first 12 50-block chunks. Follow-up run `33249526648` passed the same checks and processed the next 12 chunks through block `14043547`, with no execution failures. The scheduled job continues from the persisted cursor. A zero-block no-op run has not been captured, so local idempotence tests plus repeated successful catch-up are the available cursor evidence.
+The zero-cost Mainnet workflow variables now contain the verified Router and start block `14042348`. Initial preflight run `33248999756` passed, and final preflight run `33251420976` passed against release commit `a81fdac3cf9bb7cff4ede961b7925aae162a0187`. Migration and initial sync run `33249047016` passed setup, build, migration, runtime-role verification, and the first 12 50-block chunks. Follow-up run `33249526648` passed the same checks and processed the next 12 chunks through block `14043547`, with no execution failures. Final catch-up run `33251549194` passed setup, build, and runtime-role verification, then processed 12 more 50-block chunks from block `14043548` through `14044147`, with zero execution failures. The scheduled job continues from the persisted cursor. A zero-block no-op run has not been captured, so local idempotence tests plus repeated successful catch-up are the available cursor evidence.
 
 ## Gates that remain open
 
@@ -617,10 +617,10 @@ VOCAP Mainnet work is complete only when every item below has authoritative evid
 - [x] Bob Router execution finalized.
 - [x] At least three qualifying Router transaction hashes verified.
 - [ ] Root `strk20.json` created from the current upstream schema with real values only.
-- [x] Mainnet indexer configured from the verified Router deployment block. Runs `33249047016` and `33249526648` passed setup, build, migration, and restricted runtime-role checks, and processed 24 bounded chunks through block `14043547` with no execution failures.
+- [x] Mainnet indexer configured from the verified Router deployment block. Runs `33249047016`, `33249526648`, and `33251549194` passed setup, build, migration where applicable, and restricted runtime-role checks, and processed 36 bounded chunks through block `14044147` with no execution failures.
 - [ ] Capture a zero-block cursor no-op after catch-up to complete the final idempotence observation. The local replay test and the repeated successful catch-up run already cover the store and retry paths.
 - [x] Public documentation updated with truthful Mainnet evidence.
-- [ ] Final secret scan and release diff passed after this documentation update.
+- [x] Final secret scan and release diff passed after this documentation update.
 
 ## Canonical repository references
 
