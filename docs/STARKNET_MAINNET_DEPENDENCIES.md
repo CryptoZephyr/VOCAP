@@ -1,24 +1,48 @@
 # Starknet Mainnet dependency record
 
-This record identifies the exact upstream Starknet privacy source selected for VOCAP Mainnet review. It contains public dependency information only and does not authorize a transaction.
+This record identifies the exact upstream Starknet Privacy source selected for VOCAP Mainnet review. It contains public dependency information only and does not authorize a transaction.
 
 ## Selected release
 
 - Repository: `https://github.com/starkware-libs/starknet-privacy`
-- Tag: `PRIVACY-0.14.3-RC.5`
-- Commit: `66e3caae8c0201227a6719696d004e30d90aea65`
-- SDK package version: `0.14.3-rc.5`
-- Starknet.js dependency: `10.5.0`
+- Tag: `PRIVACY-0.14.3-RC.2`
+- Commit: `9bfeb8dd35565a2915a0617dff3f649bd5bb891a`
+- SDK package version: `0.14.3-rc.2`
+- SDK lockfile: upstream `sdk/package-lock.json`, npm lockfile version `3`
+- SDK lockfile SHA-256: `A93E86BFB7F10231C6584C40B29D5EE4DE96E349EC57AE7F822615BEFC97891B`
+- SDK runtime `starknet`: `10.0.0-beta.6`, as resolved by that lockfile
+- VOCAP backend `starknet`: `10.5.0`, a separate backend dependency
 
-The selected commit is the immutable official RC.5 tag. Do not build the Mainnet wallet flow from the later local checkout at commit `51652200561151499b03f90e3a05f03c91f5b349`. That checkout still labels its package RC.5 but contains unreleased version `2.1` changes, while the live Mainnet privacy pool reports version `2.0`.
+The upstream Git reference resolves the RC2 tag to the commit above, and GitHub marks the release commit as verified. The active local checkout under `.tools/starknet-privacy` is detached at this exact commit. The reproducible client pin and package manifest hashes are recorded in [PRIVACY_RC2_PIN.md](PRIVACY_RC2_PIN.md).
 
-The official RC.5 SDK build passed locally. Its external-invoke and compute-and-invoke suites passed `7` tests with coverage disabled. A separate non-broadcast proof-context rehearsal against the live Mainnet prover and discovery services also completed, returning `9` proof facts and the expected `apply_actions` call shape. This does not prove a submitted Mainnet transaction.
+No RC5 package, lockfile, checkout, or service selection is part of the active Mainnet path. Older RC5 runs in the handoff and Sepolia records are historical evidence only. The privacy SDK remains client-side and is not added to `backend/package.json`.
 
-The upstream pool interface enforces phased client actions. `CreateOpenNote` is phase `5`, `Withdraw` is phase `6`, and `InvokeExternal` is phase `7`, with at most one external invocation. VOCAP's callback additionally requires exactly one withdrawal to the Router and exactly one open return note for the policy token before it builds Router calldata.
+## Official compatibility row
+
+The upstream matrix says that components in one row are tested together and must use matching revisions:
+
+| Component | Required RC2 selection |
+| --- | --- |
+| Transaction prover | `ghcr.io/starkware-libs/starknet-privacy/transaction-prover:PRIVACY-0.14.3-RC.2` |
+| Proof interceptor | `ghcr.io/starkware-libs/starknet-privacy/proof-interceptor:PRIVACY-0.14.3-RC.2` when screening is enabled |
+| Discovery service | `ghcr.io/starkware-libs/starknet-privacy/discovery-service:PRIVACY-0.14.3-RC.2` |
+| Pathfinder | `eqlabs/pathfinder:v0.22.7` with `PATHFINDER_STORAGE_STATE_TRIES=10000` |
+| SDK | `PRIVACY-0.14.3-RC.2` |
+
+Source: [official Starknet Privacy compatibility matrix](https://github.com/starkware-libs/starknet-privacy#compatibility-matrix).
+
+## RC2 verification
+
+- Exact `npm ci --ignore-scripts --no-audit --no-fund` completed in the RC2 `sdk/` directory using the upstream lockfile.
+- `npm run build` passed from the exact RC2 checkout.
+- The fast SDK suite passed `252` tests across `26` files with coverage disabled.
+- The full SDK command ran `28` files. `27` files and `254` tests passed. The five devnet tests failed before setup because the Windows environment has no installed `starknet-devnet` executable (`spawn starknet-devnet ENOENT`). The failure is environment setup, not a mixed SDK revision.
+- The upstream `npm run lint` wrapper reports formatting differences across the pristine release checkout. No upstream source was reformatted or changed.
+- The RC2 proof preflight against the live Mainnet services returned `9` proof facts and `18` `apply_actions` words. It made no Mainnet write.
 
 ## Live Mainnet read-only snapshot
 
-Recorded 2026-08-29 at Starknet Mainnet block `14,018,608`:
+Recorded 2026-08-29 at the RC2 proof refresh:
 
 - Chain: `SN_MAIN`
 - Privacy pool: `0x040337b1af3c663e86e333bab5a4b28da8d4652a15a69beee2b677776ffe812a`
@@ -26,26 +50,24 @@ Recorded 2026-08-29 at Starknet Mainnet block `14,018,608`:
 - Pool version: `2.0`
 - Pool `apply_actions` fee: `6000000000000000000` fri, or `6 STRK`
 - Proof validity window: `450` blocks
-- Transaction prover health: HTTP 200
-- Discovery service health: HTTP 200
-- Discovery chain head at service check: block `14,018,643`, about `5` seconds of lag
-- Transaction prover RPC spec: `0.10.3-rc.2`
-- OHTTP key responses: `43` bytes from both services
+- Prover health and OHTTP keys: HTTP `200`
+- Discovery health and OHTTP keys: HTTP `200`
+- Prover JSON-RPC spec: `0.10.3-rc.2`
+- RC2 proof refresh: block `14,036,380`, proving block `14,036,370`, `305284` proof bytes
 
-The latest read-only refresh on 2026-08-29 reached common block `14,026,607` through Lava and Cartridge. It still matched `SN_MAIN`, pool version `2.0`, the `6 STRK` fee, and the `450`-block proof window. The configured wallet's pool allowance remained `0`, so the RC.5 proof preflight stopped before a fee quote that depends on approval. Both service health endpoints and both OHTTP-key endpoints returned HTTP `200`, with `43`-byte key responses. Discovery reported a live Mainnet head at block `14,026,635` with `5` seconds of lag. No immutable service revision or image digest was exposed.
+The protocol responses match RC2, but neither service exposes an immutable image digest or revision. Health, key, and protocol responses do not prove the deployed image tag. The service operator must provide the prover and discovery image digests or immutable revisions before the privacy release-family gate can close.
 
-The newest public preflight reached block `14,026,733` through Lava and `14,026,734` through Cartridge. The frozen Router and target remained undeployed, and a validation-on estimate for the reviewed `43 STRK` allowance approval returned `0.150653541579872337 STRK`. The declaration estimates moved with gas conditions, so the complete sequence still requires a fresh sequential quote immediately before any approved write.
+The latest direct service refresh also returned HTTP `200` from both health endpoints and both OHTTP-key endpoints, with prover spec `0.10.3-rc.2`. The response headers still exposed no immutable digest or revision.
 
-A fresh RC.5 proof preflight at block `14,027,254`, proving block `14,027,244`, again returned `9` proof facts, `18` `apply_actions` words, `304304` proof bytes, and HTTP `200` from both health and both OHTTP-key endpoints. An exploratory comparison compiled immutable RC.2 source at commit `9bfeb8dd35565a2915a0617dff3f649bd5bb891a` with the available dependency tree and produced the same proof shape. Neither check exposed an immutable deployed service revision or image digest.
-
-An isolated RC.2 worktree with a fresh dependency install passed the SDK build and all `252` non-devnet tests across `26` test files. Its proof preflight at block `14,027,816`, proving block `14,027,806`, returned `9` proof facts, `18` `apply_actions` words, `312200` proof bytes, and HTTP `200` from both health and both OHTTP-key endpoints. This is client-side compatibility evidence only. It does not prove which immutable service image is deployed.
-
-A fresh RC.5 proof preflight at block `14,028,015`, proving block `14,028,005`, again returned `9` proof facts, `18` `apply_actions` words, `306596` proof bytes, and HTTP `200` from both health and both OHTTP-key endpoints. The fee estimate stopped at the zero pool allowance.
-
-The current upstream compatibility matrix names `PRIVACY-0.14.3-RC.2` for the transaction prover, discovery service, and SDK row. The selected local SDK remains the immutable `PRIVACY-0.14.3-RC.5` package. The public Mainnet prover reports RPC spec `0.10.3-rc.2`, but that RPC value is not an immutable container digest. The deployed prover and discovery image digests remain unverified. The RC.5 proof-context rehearsal is useful evidence that the live endpoints answered the selected protocol, but it does not establish the deployed image revision or clear the release-family gate.
+The configured wallet still has zero pool allowance, and the frozen Router and target classes and addresses are undeclared and undeployed. The proof fee estimate therefore fails closed at the allowance dependency. The declaration-only and approval-only values in the handoff are moving read-only quotes, not the complete sequential Mainnet requirement.
 
 ## Release boundary
 
-Before the first Mainnet proof, obtain the deployed prover and discovery revisions or image digests from the service operator and match them to an upstream tested row. If the operator cannot provide that evidence, treat the private Mainnet flow as unverified even when both health endpoints return HTTP 200.
+Before any Mainnet proof or deployment write:
 
-Generate the final private-action fee estimate from the selected RC.5 SDK, the fresh wallet, the deployed VOCAP addresses, and a valid proof context. Historical transaction fees and health checks cannot replace that estimate.
+1. Obtain immutable prover and discovery revisions or image digests and match them to the RC2 row above.
+2. Refresh the wallet, pool, class, address, nonce, and chain-state reads.
+3. Generate a fresh sequential fee estimate after each dependency exists. An exact full-sequence quote cannot be produced while the required approval, declarations, deployments, policy, and private calls remain unwritten.
+4. Obtain explicit funding and deployment approval from the operator.
+
+No Mainnet transaction has been submitted during this RC2 switch.

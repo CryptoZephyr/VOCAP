@@ -39,7 +39,7 @@ The wallet app must keep these values local to the wallet process:
 
 ## Building the RETURN action
 
-The official privacy SDK tag `PRIVACY-0.14.3-RC.5` at commit `66e3caae8c0201227a6719696d004e30d90aea65` is the selected Mainnet source. It discovers the note, creates the private withdrawal, creates the fresh open return note, and asks the user wallet to sign the proof invocation. The VOCAP callback binds the SDK context to the configured router policy:
+The official privacy SDK tag `PRIVACY-0.14.3-RC.2` at commit `9bfeb8dd35565a2915a0617dff3f649bd5bb891a` is the selected Mainnet source. Its deterministic npm lockfile is recorded in [PRIVACY_RC2_PIN.md](PRIVACY_RC2_PIN.md). It discovers the note, creates the private withdrawal, creates the fresh open return note, and asks the user wallet to sign the proof invocation. The VOCAP callback binds the SDK context to the configured router policy:
 
 ```typescript
 import { Open, createPrivateTransfers } from "@starkware-libs/starknet-privacy-sdk";

@@ -6,7 +6,7 @@ VOCAP stays Sepolia-first until the complete reusable sequence is proven with a 
 
 - The RETURN-only router passes the local Cairo security suite and Cairo auditor preflight.
 - The backend projection and transaction-state model pass their local tests and build.
-- The pinned upstream privacy SDK, `@starkware-libs/starknet-privacy-sdk@0.14.3-rc.5`, builds locally.
+- The active pinned upstream privacy SDK, `@starkware-libs/starknet-privacy-sdk@0.14.3-rc.2`, builds locally from the deterministic RC2 lockfile. The older RC5 rehearsal records below are historical only.
 - The upstream SDK invoke integration test passes four tests with coverage disabled.
 - `backend/src/private-flow.ts` serializes the router call and checks the SDK withdrawal and return-note context.
 
@@ -46,7 +46,7 @@ The router and target constructor state, policy state, class hashes, and deploym
 
 ## Live Sepolia evidence
 
-Recorded 2026-08-28 from accepted receipts using the pinned SDK `0.14.3-rc.5`, OHTTP-enabled proving and discovery, and the configured Sepolia RPC. No private key or viewing key is stored here.
+Historical record, recorded 2026-08-28 from accepted receipts using the then-pinned SDK `0.14.3-rc.5`, OHTTP-enabled proving and discovery, and the configured Sepolia RPC. This record predates the active RC2 switch and is not a current Mainnet dependency. No private key or viewing key is stored here.
 
 ### RETURN and reuse
 
