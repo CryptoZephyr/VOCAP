@@ -8,7 +8,8 @@ This record freezes the static VOCAP production artifacts for review. It does no
 - Scarb: `2.20.1`
 - Cairo: `2.20.0`
 - Starknet.js: `10.5.0`
-- Privacy SDK: `@starkware-libs/starknet-privacy-sdk@0.14.3-rc.5`, official tag commit `66e3caae8c0201227a6719696d004e30d90aea65`
+- Privacy SDK: `@starkware-libs/starknet-privacy-sdk@0.14.3-rc.2`, official tag `PRIVACY-0.14.3-RC.2`, commit `9bfeb8dd35565a2915a0617dff3f649bd5bb891a`
+- Privacy SDK lockfile: upstream `sdk/package-lock.json`, SHA-256 `A93E86BFB7F10231C6584C40B29D5EE4DE96E349EC57AE7F822615BEFC97891B`
 
 ## Production contracts
 
