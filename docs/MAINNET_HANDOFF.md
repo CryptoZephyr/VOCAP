@@ -27,7 +27,7 @@ The Mainnet workflow is currently safe and inactive. The RPC and database secret
 
 The public wallet was funded and deployed on Sepolia only as a rehearsal checkpoint. The faucet transfer and account deployment succeeded, but the remaining testnet balance is below the cost of the complete seven-call private lifecycle. This did not touch the Mainnet wallet or Mainnet configuration.
 
-The conservative provisional wallet target is `106 STRK`. This is a planning ceiling, not a final quote. The configured Mainnet wallet currently reports `126.443768493564389985 STRK`, but the current declaration-only estimate is `33.722541433835540256 STRK` and the remaining deployment, policy, funding, and proof-backed calls still need a sequential estimate. Immediately before funding or signing, replace the planning ceiling with a fresh estimate for the final wallet, salts, addresses, calldata, and real proof contexts.
+The conservative provisional wallet target is `106 STRK`. This is a planning ceiling, not a final quote. The configured Mainnet wallet currently reports `126.443768493564389985 STRK`, and the latest validation-on declaration-only subtotal is `36.414712322279156262 STRK`. The remaining deployment, policy, funding, and proof-backed calls still need a sequential estimate. Immediately before funding or signing, replace the planning ceiling with a fresh estimate for the final wallet, salts, addresses, calldata, and real proof contexts.
 
 ## Non-negotiable security boundary
 
@@ -161,6 +161,7 @@ The 2026-08-29 operator refresh added this evidence:
 - An initial read-only Sepolia check at block `14,205,377` found the same public wallet address with `1 STRK` and no deployed account class. This was the pre-funding state.
 - The candidate historical Sepolia pool read at block `14,205,393` returned its known class hash, a `2 STRK` protocol fee, and a `450`-block proof window. The initial `1 STRK` testnet balance could not cover even one pool protocol-fee call, before account, gas, or contract deployment costs.
 - The declaration-only fee estimate at the refresh block was `28.840460154282420096 STRK` for `VocapRouter` and `4.882081279553120160 STRK` for `VocapApprovedTarget`. Deployment and policy estimates correctly remained unavailable because their classes and Router address are not declared or deployed.
+- A fresh validation-on Mainnet estimate returned `31.512530018264919330 STRK` for `VocapRouter` at block `14,021,564` and `4.902182304014236932 STRK` for `VocapApprovedTarget` at block `14,021,579`, for a current declaration subtotal of `36.414712322279156262 STRK`. Deployment, policy, and private-call estimates remain unavailable until their dependencies exist.
 - The official public Sepolia faucet transferred `5 STRK` to the public wallet in transaction `0x361d91c86a8289aff2c0ba6b0b29cdd5e5d19005110d888999bae50f2ff242f`. The receipt was `SUCCEEDED` and `ACCEPTED_ON_L2` at block `14,205,514`, with the transfer event showing `5 STRK`.
 - The standard Braavos account deployment then succeeded in transaction `0x14210ad15334ae3962e3792e4d4175f19b212cd6f8d9f56320f0581d32cc595`. The receipt was `SUCCEEDED` and `ACCEPTED_ON_L2` at block `14,205,980`, with an actual fee of `0.054521748329982568 STRK`. A post-receipt read returned the expected Braavos account class, and the chain was allowed to advance to block `14,205,997` before the next dependency check.
 - A fresh Sepolia read at block `14,206,379` returned the expected Braavos account class and a balance of `5.945478251670017432 STRK`. The candidate pool fee remains `2 STRK` per `apply_actions` call, so this balance cannot fund the seven-call private lifecycle. No Sepolia protocol declaration, Router deployment, policy write, registration, or private action was submitted.
@@ -266,6 +267,8 @@ The 2026-08-29 refresh estimated only the two declarations, with validation skip
 | Declaration subtotal | `33.722541433835540256 STRK` |
 
 With the deployed wallet's normal account validation enabled, a follow-up estimate at block `14,019,664` returned `28.782763929127762416 STRK` for the Router declaration and `4.872314589998839920 STRK` for the target declaration, a combined `33.655078519126602336 STRK`. Gas prices can change between blocks, so this is still a current read-only quote rather than an approved final budget.
+
+A later validation-on refresh returned `31.512530018264919330 STRK` for the Router declaration at block `14,021,564` and `4.902182304014236932 STRK` for the target declaration at block `14,021,579`, a combined `36.414712322279156262 STRK`. This newer subtotal replaces the earlier declaration quote for planning, but it still does not cover the dependent deployments, policy transaction, funding, or proof-backed private calls.
 
 The Router deployment estimate failed closed because its class is not declared. The target deployment and policy estimates failed closed because the target and Router are not deployed. These are expected read-only pre-write results, not errors to bypass.
 
