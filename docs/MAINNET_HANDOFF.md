@@ -8,13 +8,13 @@ Release branch: `main`
 
 Handoff commit at preparation time: `6475cb7647d496bd99e81dd2ac6fbaa6d000de03`
 
-Status: pre-write refresh completed. Local verification and a non-broadcast Mainnet proof-context rehearsal passed. A Sepolia-only faucet funding checkpoint and Braavos account deployment also succeeded. No Mainnet declaration, deployment, policy write, funding transfer, private registration, private action, or scoring transaction has been submitted. Mainnet signing remains paused while the exact frozen Sepolia rehearsal, service provenance, and final sequential fee approval are open.
+Status: pre-write refresh completed. Local verification, a non-broadcast Mainnet proof-context rehearsal, and the exact frozen Sepolia private lifecycle passed. No Mainnet declaration, deployment, policy write, funding transfer, private registration, private action, or scoring transaction has been submitted. Mainnet signing remains paused while service provenance, the final sequential fee estimate, and the Mainnet write checkpoints are open.
 
 This file is the execution handoff for the frozen VOCAP V1 release. It records what is ready, what must remain unchanged, the wallet and secret boundaries, the required transaction order, the corrected cost model, the STRK20 scoring evidence, the zero-cost backend activation sequence, and the conditions for stopping.
 
 ## Executive summary
 
-VOCAP's contract and backend verification suites pass. The frozen contract artifacts and source hashes are recorded below. A real RETURN, capability reuse, private succession, stale-note rejection, and PostgreSQL projection flow has been demonstrated on Sepolia using an older Router deployment. The frozen Router contains a later surplus-balance fix, so the exact frozen Router still needs a final Sepolia rehearsal before Mainnet writes.
+VOCAP's contract and backend verification suites pass. The frozen contract artifacts and source hashes are recorded below. A real RETURN, capability reuse, private succession, stale-note rejection, and PostgreSQL projection flow has been demonstrated on Sepolia. The exact frozen Router and target also passed the complete seven-call Sepolia lifecycle, including three Router executions.
 
 The Mainnet backend is prepared on a zero-monthly-cost pilot design:
 
@@ -25,7 +25,7 @@ The Mainnet backend is prepared on a zero-monthly-cost pilot design:
 
 The Mainnet workflow is currently safe and inactive. The RPC and database secrets exist in the protected `vocap-mainnet` GitHub environment. `VOCAP_ROUTER_ADDRESS` and `VOCAP_START_BLOCK` must stay unset until the Router has been deployed and read back from Mainnet.
 
-The public wallet was funded and deployed on Sepolia only as a rehearsal checkpoint. The faucet transfer and account deployment succeeded, but the remaining testnet balance is below the cost of the complete seven-call private lifecycle. This did not touch the Mainnet wallet or Mainnet configuration.
+The public wallet was funded and deployed on Sepolia only as a rehearsal checkpoint. The first faucet transfer and account deployment succeeded, and a second official faucet transfer has now raised the testnet balance above the seven-call protocol-fee floor. This did not touch the Mainnet wallet or Mainnet configuration.
 
 The conservative provisional wallet target is `106 STRK`. This is a planning ceiling, not a final quote. The configured Mainnet wallet currently reports `126.443768493564389985 STRK`, and the latest validation-on declaration-only subtotal is `33.773756127640066656 STRK` at block `14,022,322`. The remaining deployment, policy, funding, and proof-backed calls still need a sequential estimate. Immediately before funding or signing, replace the planning ceiling with a fresh estimate for the final wallet, salts, addresses, calldata, and real proof contexts.
 
@@ -161,7 +161,7 @@ The 2026-08-29 operator refresh added this evidence:
 - A final read-only service refresh remained healthy: both health endpoints returned HTTP `200`, both OHTTP key responses were `43` bytes, and discovery reported Mainnet chain head `14,019,416` with about `5` seconds of lag. This refresh still exposed no immutable image digest.
 - The latest service refresh returned prover health HTTP `200`, prover JSON-RPC spec `0.10.3-rc.2`, discovery health HTTP `200` with status `OK`, discovery chain head `14,021,117`, and about `5` seconds of lag. Both OHTTP key responses remained `43` bytes, and no immutable image digest or revision was exposed.
 - A fresh service refresh returned prover health HTTP `200`, prover JSON-RPC spec `0.10.3-rc.2`, discovery health HTTP `200` with status `OK`, discovery chain head `14,022,203`, and `6` seconds of lag. Both OHTTP key responses were `43` bytes, and no immutable image digest or revision was exposed.
-- The corresponding alpha-Sepolia prover and discovery hosts are reachable for the pending testnet rehearsal. Sepolia prover health and JSON-RPC spec returned `200` and `0.10.3-rc.2`, discovery health returned `200` with a live chain head, and both OHTTP key responses were `43` bytes. These hosts are not substituted into the Mainnet environment, and they still do not expose immutable image digests.
+- The corresponding alpha-Sepolia prover and discovery hosts are reachable for the frozen testnet rehearsal. Sepolia prover health and JSON-RPC spec returned `200` and `0.10.3-rc.2`, discovery health returned `200` with a live chain head, and both OHTTP key responses were `43` bytes. These hosts are not substituted into the Mainnet environment, and they still do not expose immutable image digests.
 - An initial read-only Sepolia check at block `14,205,377` found the same public wallet address with `1 STRK` and no deployed account class. This was the pre-funding state.
 - The candidate historical Sepolia pool read at block `14,205,393` returned its known class hash, a `2 STRK` protocol fee, and a `450`-block proof window. The initial `1 STRK` testnet balance could not cover even one pool protocol-fee call, before account, gas, or contract deployment costs.
 - The declaration-only fee estimate at the refresh block was `28.840460154282420096 STRK` for `VocapRouter` and `4.882081279553120160 STRK` for `VocapApprovedTarget`. Deployment and policy estimates correctly remained unavailable because their classes and Router address are not declared or deployed.
@@ -170,21 +170,23 @@ The 2026-08-29 operator refresh added this evidence:
 - The standard Braavos account deployment then succeeded in transaction `0x14210ad15334ae3962e3792e4d4175f19b212cd6f8d9f56320f0581d32cc595`. The receipt was `SUCCEEDED` and `ACCEPTED_ON_L2` at block `14,205,980`, with an actual fee of `0.054521748329982568 STRK`. A post-receipt read returned the expected Braavos account class, and the chain was allowed to advance to block `14,205,997` before the next dependency check.
 - A fresh Sepolia read at block `14,206,379` returned the expected Braavos account class and a balance of `5.945478251670017432 STRK`. The candidate pool fee remains `2 STRK` per `apply_actions` call, so this balance cannot fund the seven-call private lifecycle. No Sepolia protocol declaration, Router deployment, policy write, registration, or private action was submitted.
 - A fresh independent Cartridge Sepolia read at block `14,208,037` returned `SN_SEPOLIA`, the expected Braavos account class, the same `5.945478251670017432 STRK` balance, pool version `2.0`, the `2 STRK` fee, and the `450`-block proof window. The frozen Router and target addresses remain undeployed, so no cheaper compatible pool or alternate rehearsal path was found.
+- The official Sepolia faucet then sent `100 STRK` to the same wallet in transaction `0x6617b1860bdc5fd78f9f4ab2d88eb5dcc010ca8f2a7f0b389f5eabcaca67507`. The independent Cartridge receipt is `SUCCEEDED` and `ACCEPTED_ON_L2` at block `14,208,751`; its transfer event carries `100 STRK`. A fresh `balance_of` read returned `105.945478251670017432 STRK`, which clears the seven-call `14 STRK` protocol-fee floor before gas.
+- The exact frozen Sepolia Router and target were read back with policy `1`, pool version `2.0`, a `2 STRK` pool fee, and a `450`-block proof window. The completed lifecycle used fresh disposable Sepolia Alice and Bob accounts, leaving the Mainnet wallet and its private key outside the test flow. It recorded successful receipts for Alice registration `0x6abc49daff57f1bdbf660851c55687ff58dd1d4c7e44b9522122484565f52aa`, Bob registration `0x3cf9da4439a299282cb6a257f3a8fd589101e2c4b231edf5eea98a6e4c44acf`, the `1 STRK` capability deposit `0x51f1347949b19fd6231e44d9fcd18eb14ed69775e3af8366338eb0d3e5cb9fd`, Alice's first Router execution `0x62befe3a6b207635dba12a797479862388b3077a4b2a8299e2a63c63eee4ca5`, Alice's second Router execution `0x4478639d547430e237410efbee52fd8774758675178327cb03f0ef4721d4ae`, Alice-to-Bob succession `0x4ed6cfbdb268cabd3c4c1a7cab89b30dd4bdee775cd9076f8285f14ce2f5ef2`, and Bob's Router execution `0x55872d7c5be3d46c460cf8ce46894f0d06aacbac8bfd983ffe2ff8b746a6852`. Every receipt was `SUCCEEDED` and `ACCEPTED_ON_L2`. The target action count advanced from `2` to `5`, and the stale Alice note reuse was rejected before broadcast. The sanitized operator record is outside the repository at `C:\Users\HomePC\Documents\VOCAP-mainnet-evidence\2026-08-29-frozen-sepolia-rehearsal.json`.
 
-This evidence does not prove the remaining Mainnet deployment or scoring flow.
+This evidence proves the frozen Sepolia flow only. It does not prove the remaining Mainnet deployment or scoring flow.
 
 ## Gates that remain open
 
 Do not begin Mainnet signing while any required pre-write gate is open:
 
 - [x] Re-run the full local contract and backend verification from the exact release commit.
-- [ ] Deploy the exact frozen Router to Sepolia and repeat the RETURN and succession rehearsal. The older Sepolia Router has a different class hash.
-- [ ] Record L1 finality for the remaining historical Sepolia succession receipts or replace them with the exact frozen rehearsal evidence.
+- [x] Deploy the exact frozen Router to Sepolia and repeat the RETURN and succession rehearsal. The frozen Router and target passed the seven-call lifecycle, including three Router executions.
+- [x] Replace the remaining historical Sepolia succession evidence with the exact frozen rehearsal receipts. The exact rehearsal receipts are accepted on L2 and the sanitized operator record is stored outside the repository.
 - [x] Confirm the final Mainnet wallet public address, wallet type, account class, deployment state, and nonce. The public address, Braavos account class, deployed state, and nonce are read back, and the local wallet label is `braavos`.
 - [x] Freeze Router and target deployment salts and derive their expected addresses before submission.
 - [ ] Obtain immutable prover and discovery revisions or image digests compatible with the selected release family.
-- [ ] Obtain additional Sepolia funding before the exact frozen rehearsal can consume protocol fees. The public faucet checkpoint supplied `5 STRK`, account deployment consumed `0.054521748329982568 STRK`, and the remaining `5.945478251670017432 STRK` is insufficient for seven `2 STRK` pool fees before gas.
-- [ ] Complete the next free Sepolia faucet request after the operator clears its Cloudflare challenge. At this refresh the faucet UI advertises `100 STRK` per 24 hours anonymously or `3,000 STRK` after GitHub sign-in. No additional request was submitted automatically.
+- [x] Obtain additional Sepolia funding before the exact frozen rehearsal could consume protocol fees. The second official faucet transfer was accepted on L2, and the fresh balance read returned `105.945478251670017432 STRK`, above the seven-call `14 STRK` protocol-fee floor before gas.
+- [x] Complete the next free Sepolia faucet request after the operator cleared its Cloudflare challenge. The faucet UI reported the `100 STRK` transfer and linked the accepted receipt above.
 - [x] Generate a real Mainnet proof-context rehearsal using the official RC.5 SDK. This was non-broadcast and used a fresh in-memory viewing key.
 - [ ] Run a fresh sequential fee estimate for the entire final transaction sequence.
 - [ ] Confirm whether the wallet has enough STRK for the approved final estimate and retry buffer. The current balance is above the provisional `106 STRK` planning ceiling, but the final sequential quote and any provider charges remain open.
@@ -372,7 +374,7 @@ Stop if any field differs.
 
 ### Phase 5: approval and privacy registration
 
-1. Approve only the amount required by the reviewed privacy funding flow.
+1. Approve only the amount required by the reviewed privacy funding flow. The Sepolia rehearsal required `15 STRK`, equal to seven `2 STRK` pool fees plus the `1 STRK` capability principal. Recalculate this allowance from the fresh Mainnet pool fee before signing.
 2. Register Alice's privacy account through the selected official RC.5 SDK path.
 3. Wait for a successful final receipt and confirm discovery recognizes Alice.
 4. Register Bob's privacy account.
@@ -535,8 +537,8 @@ Do not retry blindly. Save the receipt and state, diagnose the cause, refresh th
 
 VOCAP Mainnet work is complete only when every item below has authoritative evidence:
 
-- [ ] Exact frozen Router rehearsal passed on Sepolia.
-- [x] Sepolia faucet funding and public account deployment checkpoint recorded. This is testnet-only evidence and does not clear the exact frozen Router rehearsal.
+- [x] Exact frozen Router rehearsal passed on Sepolia. The target action count advanced from `2` to `5` across the completed run because two earlier exploratory Router executions were retained on the same testnet target.
+- [x] Sepolia faucet funding and public account deployment checkpoint recorded. This is testnet-only evidence and does not clear Mainnet deployment or scoring.
 - [x] Mainnet wallet public metadata and deployment state recorded.
 - [x] Final salts and expected addresses frozen.
 - [ ] Privacy service release compatibility verified.
