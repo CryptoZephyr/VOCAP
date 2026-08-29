@@ -480,7 +480,7 @@ Use these three Router executions as the scoring proof:
 
 Do not use declarations, deployments, registrations, the initial deposit, or the private succession transfer as substitutes for these three application proof hashes. They are useful supporting evidence but do not individually prove the required repeated VOCAP contract path.
 
-The root `strk20.json` is intentionally absent until real Mainnet values exist. Create it only after all three hashes are successful and verified. Follow the current schema from the upstream `starkience/strk20-hackathon` repository at submission time. Do not copy an old schema or insert placeholders.
+The root `strk20.json` now contains the three verified Mainnet proof hashes and both deployed contract addresses. Add `demo_video` and `demo_url` only when real public URLs exist. Follow the current schema from the upstream `starkience/strk20-hackathon` repository at submission time. Do not copy an old schema or insert placeholders.
 
 For each of the three hashes, record:
 

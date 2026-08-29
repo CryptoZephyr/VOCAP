@@ -5,7 +5,7 @@ This project uses the public [STRK20 hackathon repository](https://github.com/st
 ## Repository and registration
 
 - The VOCAP repository must be public and open source, with a license, before a scoring submission.
-- The root `strk20.json` must contain only real values for contracts, transaction hashes, demo URLs, and videos. It stays absent until those values exist.
+- The root `strk20.json` must contain only real values for contracts, transaction hashes, demo URLs, and videos. Add each field only when its value exists, and never use placeholders.
 - A registration pull request adds only the VOCAP object to the hackathon registry. Existing registry rows and unrelated files remain unchanged.
 - No secret, private key, viewing key, signer material, or fabricated deployment evidence belongs in the repository.
 
