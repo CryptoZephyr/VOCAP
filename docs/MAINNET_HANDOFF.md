@@ -148,6 +148,7 @@ The 2026-08-29 operator refresh added this evidence:
 - The Mainnet wallet read back as address `0x075f37debf547892cfcd1fa0e4d383a6cdec6b791dd8805078bf7ae65151f964`, account class `0x3957f9f5a1cbfe918cedc2015c85200ca51a5f7506ecb6de98a5207b759bf8a`, deployed state `true`, nonce `0x2`, and balance `126.443768493564389985 STRK`. The account class matches Braavos and the local wallet label is now corrected to `braavos`.
 - An independent Mainnet RPC read through Cartridge at block `14,019,218` returned the same chain ID and exact STRK balance as the Lava read.
 - A second independent Cartridge read at block `14,019,330` returned the configured pool class hash, the `6 STRK` protocol fee, and the `450`-block proof-validity window.
+- The latest dual-provider read through Lava and Cartridge at block `14,020,957` again matched the `SN_MAIN` chain ID, the Braavos account class, the exact `126.443768493564389985 STRK` balance, the `6 STRK` pool fee, and the `450`-block proof-validity window. Both frozen deterministic addresses still have no deployed class at this refresh block.
 - The live Mainnet refresh at block `14,018,608` confirmed chain `SN_MAIN`, the frozen STRK20 pool address, pool fee `6 STRK`, and proof-validity window `450` blocks.
 - The frozen salts derived expected Router `0x6048ed36607367ea5ae050c745d47006214ecf66fdbf173d01eba96ec5d780a` and target `0x74637f577350898c64835c88216df3030050828c723c6987a3d97d6d4eb986b` through the unique UDC path. Both deployment address fields remain blank until a write is approved.
 - A fresh Cartridge Mainnet read at block `14,019,437` confirmed both expected deterministic addresses are still undeployed.
@@ -185,7 +186,7 @@ Health responses alone do not clear the privacy-service compatibility gate. The 
 
 ## Live Mainnet dependency snapshot
 
-The latest read-only refresh used Starknet Mainnet block `14,018,608` on 2026-08-29:
+The latest read-only refresh used Starknet Mainnet block `14,020,957` on 2026-08-29:
 
 | Item | Observed value |
 | --- | --- |
