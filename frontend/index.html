@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VOCAP</title>
+    <meta
+      name="description"
+      content="Private programmable capability infrastructure for Starknet."
+    />
+    <link rel="icon" href="/vocap-logo.png" />
+  </head>
+  <body>
+    <p id="serve-hint" hidden>
+      VOCAP must be served over HTTP. From the frontend directory run: corepack pnpm dev
+    </p>
+    <div id="root"></div>
+    <script>
+      if (location.protocol === "file:") {
+        var hint = document.getElementById("serve-hint");
+        if (hint) hint.hidden = false;
+      }
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

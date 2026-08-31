@@ -1,0 +1,175 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource-variable/outfit";
+
+@theme {
+  --font-sans: "Outfit Variable", "Segoe UI", "Helvetica Neue", sans-serif;
+  --font-mono: "Cascadia Code", "Segoe UI Mono", Consolas, ui-monospace, monospace;
+  --color-background: #f3eee4;
+  --color-foreground: #141818;
+  --color-primary: #f85000;
+  --color-primary-foreground: #141818;
+  --color-secondary: #141818;
+  --color-secondary-foreground: #f3eee4;
+  --color-muted: #e7e1d4;
+  --color-muted-foreground: #3c403c;
+  --color-border: rgb(20 24 24 / 0.14);
+  --color-accent: #f85000;
+  --color-accent-foreground: #141818;
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+}
+
+:root {
+  --ivory: #f3eee4;
+  --stone: #e7e1d4;
+  --ink: #141818;
+  --ink-soft: #3c403c;
+  --accent: #f85000;
+  --radius: 2px;
+  color: var(--color-foreground);
+  background: var(--color-background);
+  font-family: var(--font-sans);
+  line-height: 1.45;
+}
+
+html,
+body,
+#root {
+  min-height: 100dvh;
+  margin: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+  overflow-x: hidden;
+}
+
+#integrate > div > div,
+article {
+  min-width: 0;
+}
+
+.brand {
+  mix-blend-mode: multiply;
+}
+
+.hero-copy::before {
+  content: "";
+  position: absolute;
+  inset: -20px -28px -16px;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgb(243 238 228 / 0.9), rgb(243 238 228 / 0.45) 72%, transparent);
+}
+
+.scene-nav a.is-active::after {
+  content: "";
+  display: inline-block;
+  width: 1.4rem;
+  height: 1px;
+  margin-left: 0.7rem;
+  background: var(--color-primary);
+  vertical-align: middle;
+}
+
+.faq-item[open] .faq-toggle {
+  color: var(--color-primary-foreground);
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+}
+
+.faq-toggle {
+  transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease;
+}
+
+.faq-toggle::before {
+  content: "+";
+  font-size: 1rem;
+}
+
+.faq-item[open] .faq-toggle::before {
+  content: "−";
+}
+
+.protocol-track span {
+  width: 0;
+  transition: width 500ms cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+
+.protocol-map[data-active="1"] .protocol-track span { width: 0%; }
+.protocol-map[data-active="2"] .protocol-track span { width: 33.333%; }
+.protocol-map[data-active="3"] .protocol-track span { width: 66.666%; }
+.protocol-map[data-active="4"] .protocol-track span { width: 100%; }
+
+.protocol-node span:first-child {
+  transition: color 240ms ease, border-color 240ms ease, background-color 240ms ease, transform 240ms ease;
+}
+
+.protocol-node.is-passed span:first-child {
+  border-color: var(--accent);
+}
+
+.protocol-node.is-current span:first-child {
+  color: var(--ivory);
+  background: var(--accent);
+  transform: scale(1.08);
+}
+
+.story-readout {
+  animation: story-enter 380ms cubic-bezier(0.2, 0.75, 0.2, 1) both;
+}
+
+@keyframes story-enter {
+  from { opacity: 0; transform: translateY(0.75rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#serve-hint {
+  margin: 24px;
+  max-width: 46rem;
+  font-size: 1.05rem;
+}
+
+@media (max-width: 767px) {
+  .scene-nav a.is-active::after {
+    width: 0.9rem;
+    margin-left: 0.45rem;
+  }
+
+  .story-chapter {
+    min-height: auto;
+    opacity: 1;
+  }
+
+  .scroll-story-pin {
+    position: relative;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .protocol-track span,
+  .protocol-node span:first-child,
+  .story-chapter {
+    transition: none;
+  }
+
+  .story-readout {
+    animation: none;
+  }
+
+  .faq-toggle {
+    transition: none;
+  }
+}

@@ -43,3 +43,6 @@ temp/
 # Local reference toolchains
 .tools/
 .neon
+
+# Vercel project metadata
+.vercel/
