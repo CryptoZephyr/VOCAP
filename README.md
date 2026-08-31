@@ -97,7 +97,7 @@ The browser frontend is live at [vocap-protocol.vercel.app](https://vocap-protoc
 | Mainnet private lifecycle | Completed with seven private-pool calls and three Router executions |
 | Mainnet proof record | [`strk20.json`](strk20.json) with three qualifying transaction hashes |
 | Sepolia indexer health | [`vocap-sepolia-indexer.onrender.com/healthz`](https://vocap-sepolia-indexer.onrender.com/healthz), live check returned HTTP `200` with `status: ok` |
-| Vercel production | [`vocap-protocol.vercel.app`](https://vocap-protocol.vercel.app), deployed from `main` at commit `34dae7a` |
+| Vercel production | [`vocap-protocol.vercel.app`](https://vocap-protocol.vercel.app), deployed from `main` at commit `b70b4e7` |
 | Browser frontend | Full frontend source in [`frontend/`](frontend/); serve locally with `corepack pnpm dev` |
 | Demo video | Not available yet |
 
