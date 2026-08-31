@@ -2,9 +2,9 @@
 
 A private STRK20 capability that triggers one approved Starknet action and returns the same value to a fresh private note.
 
-Live demo: not available yet · Video: not available yet · [Docs](#architecture) · [Security](SECURITY.md) · Submission: not linked yet
+Live frontend: [vocap-protocol.vercel.app](https://vocap-protocol.vercel.app) · Video: not available yet · [Docs](https://vocap-protocol.vercel.app/docs) · [Security](SECURITY.md) · Submission: not linked yet
 
-There is no frontend screenshot yet. This is the current product flow:
+The browser frontend ships the public landing page, official Docs, Capability Playground, Terms, and Privacy routes. This is the current product flow:
 
 ```text
 private STRK20 note
@@ -20,9 +20,9 @@ Built with: Starknet Privacy / STRK20 · Starknet Cairo · Starknet Foundry · P
 
 Network: Starknet Mainnet
 
-Status: Mainnet contracts and the proof-backed V1 lifecycle are working. The Mainnet indexer runs as a bounded, read-only scheduled projection. The frontend is not implemented yet.
+Status: Mainnet contracts and the proof-backed V1 lifecycle are working. The Mainnet indexer runs as a bounded, read-only scheduled projection. The frontend is deployed at [vocap-protocol.vercel.app](https://vocap-protocol.vercel.app). The wallet-funded Sepolia browser write remains an explicit evidence gate.
 
-Last verified: 2026-08-29.
+Last verified: 2026-08-31.
 
 ## The problem
 
@@ -77,25 +77,28 @@ The RC2 client suite passed 259 tests across 28 files. The live prover and disco
 
 ## Try it
 
-There is no browser flow to try yet. The fastest judge path is:
+The public browser frontend is live at [vocap-protocol.vercel.app](https://vocap-protocol.vercel.app). The fastest judge path is:
 
-1. Open [`strk20.json`](strk20.json) and follow any of the three Mainnet proof transactions in the next section.
-2. Run `snforge test` in `contracts/` to see the policy and failure-path suite.
-3. Run `corepack pnpm test` in `backend/` to see the indexer and wallet-boundary tests.
-4. Check the supervised Sepolia indexer at [`/healthz`](https://vocap-sepolia-indexer.onrender.com/healthz). This service is testnet-only and may wake from sleep on the first request.
+1. Open the [live frontend](https://vocap-protocol.vercel.app) and read the [official Docs](https://vocap-protocol.vercel.app/docs).
+2. Open [`strk20.json`](strk20.json) and follow any of the three Mainnet proof transactions in the next section.
+3. Run `snforge test` in `contracts/` to see the policy and failure-path suite.
+4. Run `corepack pnpm test` in `backend/` to see the indexer and wallet-boundary tests.
+5. Run `corepack pnpm dev` in `frontend/` to serve the frontend locally.
+6. Check the supervised Sepolia indexer at [`/healthz`](https://vocap-sepolia-indexer.onrender.com/healthz). This service is testnet-only and may wake from sleep on the first request.
 
 The complete reproducible commands are in [Run locally](#run-locally).
 
 ## Product / Demo
 
-The frontend is still to be built, so there is no live browser demo, screenshot set, or video. The working product surface is the user-approved private transaction path and its public evidence:
+The browser frontend is live at [vocap-protocol.vercel.app](https://vocap-protocol.vercel.app) and includes the landing, Docs, Capability Playground, Terms, and Privacy routes. The wallet-funded Sepolia write gate is still outstanding, so the public site does not claim a completed browser transaction:
 
 | Surface | Status |
 | --- | --- |
 | Mainnet private lifecycle | Completed with seven private-pool calls and three Router executions |
 | Mainnet proof record | [`strk20.json`](strk20.json) with three qualifying transaction hashes |
 | Sepolia indexer health | [`vocap-sepolia-indexer.onrender.com/healthz`](https://vocap-sepolia-indexer.onrender.com/healthz), live check returned HTTP `200` with `status: ok` |
-| Browser frontend | Not implemented yet |
+| Vercel production | [`vocap-protocol.vercel.app`](https://vocap-protocol.vercel.app), deployed from `main` at commit `34dae7a` |
+| Browser frontend | Full frontend source in [`frontend/`](frontend/); serve locally with `corepack pnpm dev` |
 | Demo video | Not available yet |
 
 ## Architecture
@@ -209,6 +212,7 @@ Each receipt is `SUCCEEDED` and `ACCEPTED_ON_L2`. The proof hashes and both depl
 ```text
 contracts/                         Cairo Router, target, and Starknet Foundry tests
 backend/                           TypeScript indexer, persistence, health, and wallet boundary
+frontend/                          Vite frontend with landing, Docs, Playground, and legal routes
 packages/vocap-client/             Browser-safe npm client for the wallet and public API boundary
 .github/workflows/                 Protected Mainnet indexer workflow
 render.yaml                        Supervised Sepolia deployment blueprint
@@ -253,6 +257,18 @@ VOCAP_TEST_DATABASE_URL=postgresql://... VOCAP_REQUIRE_POSTGRES=1 corepack pnpm 
 
 Running the indexer requires a migrated PostgreSQL schema, an explicit Starknet network, a matching RPC URL, a Router address, and a start block. The backend accepts no signer configuration.
 
+### Frontend
+
+The frontend uses Node.js 24 and Corepack pnpm. Serve it; do not open `index.html` as a `file:` URL.
+
+```text
+cd /mnt/c/Users/<windows-user>/Desktop/VOCAP/frontend
+corepack pnpm install --frozen-lockfile
+corepack pnpm test
+corepack pnpm typecheck
+corepack pnpm dev
+```
+
 ### npm client
 
 The published browser-safe client is in [`packages/vocap-client/`](packages/vocap-client/) and available on npm as [`vocap-client`](https://www.npmjs.com/package/vocap-client) version `0.1.0`. It wraps the validated Router and wallet boundary. The integrating app still supplies the verified `PRIVACY-0.14.3-RC.2` SDK release, so the package cannot silently change the proof revision.
@@ -268,7 +284,7 @@ An integrating app can install the client with `npm install vocap-client@0.1.0 s
 
 ## Limitations
 
-- The frontend is not implemented. There is no browser demo, screenshot set, or demo video yet.
+- The public frontend is deployed at [`vocap-protocol.vercel.app`](https://vocap-protocol.vercel.app). The wallet-funded Sepolia browser write remains unverified, and no demo video or screenshot set is published yet.
 - V1 supports `RETURN` only. The reviewed target takes no arguments, and arbitrary target calldata is outside the current policy.
 - The Mainnet backend is a delayed projection. Scheduled GitHub jobs and Neon Free can pause or lag, so the chain receipt remains authoritative.
 - Render is used for the supervised Sepolia service. Mainnet indexing uses GitHub Actions and Neon Free, with no wallet signer or viewing key.
@@ -277,8 +293,8 @@ An integrating app can install the client with `npm install vocap-client@0.1.0 s
 
 ## Roadmap
 
-1. Finish the frontend wallet flow with note selection, proof progress, approval, and receipt status.
-2. Publish a real demo URL, product screenshots, and the required demo video after the frontend is ready.
+1. Run and record the remaining wallet-funded Sepolia browser flow with note selection, proof progress, approval, and receipt status.
+2. Publish product screenshots and the required demo video after that flow is independently verified.
 3. Capture the scheduled indexer's zero-block no-op and publish a non-sensitive operational result.
 4. Record immutable prover and discovery image references when the service operator exposes them.
 5. Commission an independent contract and integration review before expanding beyond the V1 policy boundary.
