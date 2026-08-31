@@ -1,0 +1,40 @@
+{
+  "name": "@vocap/client",
+  "version": "0.1.0",
+  "description": "Browser-safe helpers for integrating VOCAP private STRK20 actions with a user-controlled Starknet wallet.",
+  "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test tests/**/*.test.mjs",
+    "pack:check": "npm pack --dry-run"
+  },
+  "peerDependencies": {
+    "starknet": ">=10.5.0 <11"
+  },
+  "devDependencies": {
+    "starknet": "10.5.0",
+    "typescript": "5.9.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
