@@ -33,7 +33,11 @@ const phaseCopy: Record<FlowPhase, string> = {
 const short = (value: string) => `${value.slice(0, 8)}…${value.slice(-6)}`;
 const messageOf = (error: unknown) => error instanceof Error ? error.message : String(error);
 
-export function PlaygroundPage() {
+/**
+ * Development-only Sepolia write surface. The public /playground route uses
+ * CapabilityTracePage and never imports this wallet flow.
+ */
+export function SepoliaWriteHarnessPage() {
   const [network, setNetwork] = useState<VocapNetwork>("sepolia");
   const config = DEPLOYMENTS[network];
   const [policy, setPolicy] = useState<VerifiedPolicy | null>(null);
@@ -175,7 +179,7 @@ export function PlaygroundPage() {
 
       <section className="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-[1.05fr_.95fr] md:px-10 md:py-16">
         <div>
-          <p className="mb-3 font-mono text-xs uppercase tracking-[.2em] text-primary">Capability Playground</p>
+          <p className="mb-3 font-mono text-xs uppercase tracking-[.2em] text-primary">Sepolia write harness</p>
           <h1 className="max-w-xl text-4xl font-semibold tracking-tight md:text-6xl">Use one private capability. Keep the next holder hidden.</h1>
           <p className="mt-5 max-w-[62ch] text-muted-foreground">The browser discovers your note, builds a RETURN proof, asks your wallet to submit the pool call, and waits for the exact Router event before showing success.</p>
 
@@ -237,3 +241,5 @@ export function PlaygroundPage() {
     </main>
   );
 }
+
+export const PlaygroundPage = SepoliaWriteHarnessPage;

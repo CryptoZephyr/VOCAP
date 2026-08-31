@@ -15,8 +15,8 @@ import { ROUTES } from "./routes.ts";
 
 export function Hero() {
   const ctas = getHeroCtas();
-  const tryCapability = ctas.find((cta) => cta.id === "try-capability");
-  const copyCtas = ctas.filter((cta) => cta.id !== "try-capability");
+  const capabilityTrace = ctas.find((cta) => cta.id === "capability-trace");
+  const copyCtas = ctas.filter((cta) => cta.id !== "capability-trace");
 
   return (
     <ClickSpark>
@@ -40,17 +40,17 @@ export function Hero() {
           />
         </a>
         <header className="hero-chrome relative flex h-16 max-h-20 items-center justify-end px-4 md:px-10">
-          {tryCapability ? (
+          {capabilityTrace ? (
             <Button
               nativeButton={false}
               render={
                 <a
-                  href={tryCapability.href}
-                  onClick={(event) => handleInternalClick(event, tryCapability.href)}
+                  href={capabilityTrace.href}
+                  onClick={(event) => handleInternalClick(event, capabilityTrace.href)}
                 />
               }
             >
-              {tryCapability.label}
+              {capabilityTrace.label}
             </Button>
           ) : null}
         </header>

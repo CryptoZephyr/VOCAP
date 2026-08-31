@@ -45,19 +45,19 @@ describe("atmospheric hero", () => {
     expect(html).not.toContain("action public");
   });
 
-  it("exposes the required CTAs and routes Try a Capability to /playground", () => {
+  it("exposes the required CTAs and routes Capability Trace to /playground", () => {
     const html = renderHero();
     const ctas = getHeroCtas();
-    const tryCapability = ctas.find((cta) => cta.id === "try-capability");
+    const capabilityTrace = ctas.find((cta) => cta.id === "capability-trace");
 
     expect(ctas.map((cta) => cta.label)).toEqual([
       "See how it works",
       "View Mainnet proof",
       "Integrating VOCAP? Read the docs",
-      "Try a Capability",
+      "Capability Trace",
     ]);
-    expect(tryCapability?.href).toBe(playgroundHref());
-    expect(tryCapability?.href).toBe("/playground");
+    expect(capabilityTrace?.href).toBe(playgroundHref());
+    expect(capabilityTrace?.href).toBe("/playground");
 
     for (const cta of ctas) {
       expect(html).toContain(cta.label);

@@ -33,7 +33,7 @@ describe("landing sections", () => {
       "0x3e1acf0c893cb5697d48295d629e86fdddd1f8ff1fd1d307c7f2ecab8c7616f",
       "0x290d3683e674714a79676be0fc13819fc410e0b7e3abb2551529e28a52f83e0",
       "0xd4be56bfd8b0402e150ced5ee7f8b9c912722f9e4e940d1cc1eda7ee2098d3",
-      "SUCCEEDED and ACCEPTED_ON_L2",
+      "SUCCEEDED and ACCEPTED_ON_L1",
     ]) {
       expect(html).toContain(phrase);
     }

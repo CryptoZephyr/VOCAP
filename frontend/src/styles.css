@@ -173,3 +173,754 @@ article {
     transition: none;
   }
 }
+
+.capability-trace-page {
+  --trace-line: rgb(20 24 24 / 0.16);
+  --trace-soft: rgb(231 225 212 / 0.48);
+}
+
+.trace-header {
+  display: flex;
+  min-height: 4rem;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--trace-line);
+  padding: 0 1rem;
+}
+
+.trace-header-links {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.trace-header-links a:hover {
+  color: var(--accent);
+}
+
+.trace-header-state,
+.trace-label,
+.trace-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.trace-header-state,
+.trace-label {
+  color: var(--ink-soft);
+}
+
+.trace-header-state {
+  display: none;
+}
+
+.trace-kicker {
+  margin: 0 0 0.9rem;
+  color: var(--accent);
+}
+
+.trace-intro {
+  display: grid;
+  gap: 3rem;
+  border-bottom: 1px solid var(--trace-line);
+  padding: 5.5rem 0 4.5rem;
+}
+
+.trace-intro h1,
+.trace-section-heading h2,
+.trace-detail-heading h2 {
+  margin: 0;
+  max-width: 18ch;
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.03;
+  text-wrap: balance;
+}
+
+.trace-lede {
+  max-width: 62ch;
+  margin: 1.5rem 0 0;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+.trace-facts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  align-self: end;
+  margin: 0;
+  border-top: 1px solid var(--trace-line);
+  border-bottom: 1px solid var(--trace-line);
+}
+
+.trace-facts div {
+  min-width: 0;
+  padding: 1rem 1rem 1.1rem 0;
+}
+
+.trace-facts div + div {
+  border-left: 1px solid var(--trace-line);
+  padding-left: 1rem;
+}
+
+.trace-facts dt {
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.trace-facts dd {
+  margin: 0.45rem 0 0;
+  font-size: 0.96rem;
+  font-weight: 600;
+}
+
+.trace-lifecycle,
+.trace-executions,
+.trace-addresses {
+  padding: 5.5rem 0;
+}
+
+.trace-lifecycle,
+.trace-executions {
+  border-bottom: 1px solid var(--trace-line);
+}
+
+.trace-section-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(12rem, 18rem);
+  gap: 2rem;
+  align-items: end;
+  margin-bottom: 2.5rem;
+}
+
+.trace-section-heading h2,
+.trace-detail-heading h2 {
+  max-width: 14ch;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+}
+
+.trace-section-heading > p {
+  max-width: 26ch;
+  justify-self: end;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  text-align: right;
+}
+
+.trace-step-line {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--trace-line);
+  border-bottom: 1px solid var(--trace-line);
+  list-style: none;
+}
+
+.trace-step-line li {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.85rem;
+  align-items: start;
+  padding: 1.25rem 1rem 1.35rem 0;
+}
+
+.trace-step-line li + li {
+  padding-left: 1rem;
+  border-left: 1px solid var(--trace-line);
+}
+
+.trace-step-marker,
+.trace-detail-number {
+  display: inline-grid;
+  width: 1.7rem;
+  height: 1.7rem;
+  place-items: center;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+}
+
+.trace-step-line p,
+.trace-detail-steps p {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.trace-step-line li div span,
+.trace-detail-steps li div span {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--ink-soft);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.trace-step-arrow {
+  align-self: center;
+  color: var(--accent);
+}
+
+.trace-boundary-note {
+  display: grid;
+  grid-template-columns: minmax(9rem, 0.35fr) minmax(0, 1fr);
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding: 1.15rem 1.25rem;
+  border-left: 2px solid var(--accent);
+  background: var(--trace-soft);
+}
+
+.trace-boundary-note p {
+  max-width: 58ch;
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.trace-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+  padding: 0.5rem 0 1rem;
+}
+
+.trace-card-shell {
+  min-width: 0;
+  animation: trace-float-one 7.2s ease-in-out infinite;
+  animation-play-state: running;
+}
+
+.trace-card-shell-2 {
+  margin-top: 2.5rem;
+  animation-name: trace-float-two;
+  animation-delay: -1.8s;
+}
+
+.trace-card-shell-3 {
+  margin-top: 0.8rem;
+  animation-name: trace-float-three;
+  animation-delay: -3.1s;
+}
+
+.trace-card-shell:hover,
+.trace-card-shell:focus-within {
+  animation-play-state: paused;
+}
+
+.trace-card {
+  display: flex;
+  width: 100%;
+  min-height: 20rem;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 1px solid var(--trace-line);
+  border-radius: 2px;
+  background: var(--ivory);
+  padding: 1.35rem;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+}
+
+.trace-card:hover,
+.trace-card:focus-visible,
+.trace-card-shell.is-selected .trace-card {
+  border-color: var(--accent);
+  background: #f8f4eb;
+  box-shadow: 0 14px 28px rgb(72 55 31 / 0.08);
+  transform: translateY(-4px);
+}
+
+.trace-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.trace-card-topline,
+.trace-card-data,
+.trace-card-action,
+.trace-card-receipt {
+  display: flex;
+  align-items: center;
+}
+
+.trace-card-topline {
+  justify-content: space-between;
+}
+
+.trace-card-index {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+}
+
+.trace-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #167054;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+}
+
+.trace-card-role {
+  margin-top: 1.65rem;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.trace-card-title {
+  display: block;
+  font-size: 1.55rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.trace-card-description {
+  display: block;
+  max-width: 31ch;
+  min-height: 3.3rem;
+  color: var(--ink-soft);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.trace-card-data {
+  gap: 1.25rem;
+  margin-top: 0.8rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--trace-line);
+}
+
+.trace-card-data > span {
+  display: grid;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.trace-card-data strong {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.trace-card-action {
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 1.1rem;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.trace-card-receipt,
+.trace-primary-link,
+.trace-proof a,
+.trace-address-row > a {
+  width: fit-content;
+  gap: 0.35rem;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.trace-card-receipt {
+  margin: 0.8rem 0 0 0.15rem;
+}
+
+.trace-card-receipt:hover,
+.trace-primary-link:hover,
+.trace-proof a:hover,
+.trace-address-row > a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.trace-detail {
+  border-bottom: 1px solid var(--trace-line);
+  padding: 5.5rem 0;
+}
+
+.trace-detail-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: end;
+}
+
+.trace-detail-heading > div > p:last-child {
+  max-width: 56ch;
+  margin: 1.15rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+.trace-primary-link {
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--accent);
+}
+
+.trace-receipt-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 2.5rem;
+  border-top: 1px solid var(--trace-line);
+  border-bottom: 1px solid var(--trace-line);
+}
+
+.trace-receipt-grid > div {
+  display: grid;
+  gap: 0.45rem;
+  padding: 1rem 1rem 1.05rem 0;
+}
+
+.trace-receipt-grid > div + div {
+  border-left: 1px solid var(--trace-line);
+  padding-left: 1rem;
+}
+
+.trace-receipt-grid strong {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.trace-detail-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(14rem, 0.7fr);
+  gap: 2rem;
+  margin-top: 2.5rem;
+}
+
+.trace-detail-steps {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--trace-line);
+  list-style: none;
+}
+
+.trace-detail-steps li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--trace-line);
+}
+
+.trace-detail-steps li div span {
+  max-width: 44ch;
+}
+
+.trace-detail-arrow {
+  color: var(--accent);
+}
+
+.trace-proof {
+  display: grid;
+  align-content: start;
+  gap: 0.85rem;
+  min-width: 0;
+  border-left: 2px solid var(--accent);
+  background: var(--trace-soft);
+  padding: 1.2rem 1.35rem;
+}
+
+.trace-proof .trace-label {
+  margin: 0;
+}
+
+.trace-proof code {
+  display: block;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.trace-proof-note {
+  margin: 0.35rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.trace-addresses {
+  padding-bottom: 6rem;
+}
+
+.trace-address-list {
+  border-top: 1px solid var(--trace-line);
+}
+
+.trace-address-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--trace-line);
+}
+
+.trace-address-row > div {
+  min-width: 0;
+}
+
+.trace-address-row .trace-label {
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.trace-address-row code {
+  display: block;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  overflow-wrap: anywhere;
+}
+
+.trace-footnote {
+  max-width: 75ch;
+  margin: 1.35rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.trace-footer {
+  display: flex;
+  min-height: 4.5rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--trace-line);
+  padding: 0 1rem;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.trace-footer div {
+  display: flex;
+  gap: 1rem;
+}
+
+.trace-footer a:hover {
+  color: var(--accent);
+}
+
+@keyframes trace-float-one {
+  0%, 100% { transform: translateY(0) rotate(-0.3deg); }
+  50% { transform: translateY(-9px) rotate(0.2deg); }
+}
+
+@keyframes trace-float-two {
+  0%, 100% { transform: translateY(0) rotate(0.25deg); }
+  50% { transform: translateY(-12px) rotate(-0.15deg); }
+}
+
+@keyframes trace-float-three {
+  0%, 100% { transform: translateY(0) rotate(-0.2deg); }
+  50% { transform: translateY(-7px) rotate(0.25deg); }
+}
+
+@media (min-width: 768px) {
+  .trace-header {
+    padding: 0 2.5rem;
+  }
+
+  .trace-header-state {
+    display: inline;
+  }
+
+  .trace-intro {
+    grid-template-columns: minmax(0, 1.3fr) minmax(17rem, 0.7fr);
+    align-items: end;
+  }
+
+  .trace-footer {
+    padding: 0 2.5rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .trace-header {
+    min-height: 4.5rem;
+  }
+
+  .trace-header-links {
+    gap: 0.75rem;
+  }
+
+  .trace-header-state {
+    display: none;
+  }
+
+  .trace-intro {
+    padding: 4rem 0 3.5rem;
+  }
+
+  .trace-intro h1 {
+    max-width: 13ch;
+  }
+
+  .trace-lede {
+    font-size: 0.96rem;
+  }
+
+  .trace-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .trace-facts div,
+  .trace-facts div + div {
+    padding: 0.8rem 0;
+    border-left: 0;
+  }
+
+  .trace-facts div + div {
+    border-top: 1px solid var(--trace-line);
+  }
+
+  .trace-lifecycle,
+  .trace-executions,
+  .trace-detail,
+  .trace-addresses {
+    padding: 4rem 0;
+  }
+
+  .trace-section-heading,
+  .trace-detail-heading,
+  .trace-detail-body {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .trace-section-heading > p {
+    justify-self: start;
+    text-align: left;
+  }
+
+  .trace-step-line {
+    grid-template-columns: 1fr;
+  }
+
+  .trace-step-line li,
+  .trace-step-line li + li {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    padding: 1rem 0;
+    border-left: 0;
+  }
+
+  .trace-step-line li + li {
+    border-top: 1px solid var(--trace-line);
+  }
+
+  .trace-step-arrow {
+    transform: rotate(90deg);
+  }
+
+  .trace-boundary-note {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .trace-card-grid {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+
+  .trace-card-shell-2,
+  .trace-card-shell-3 {
+    margin-top: 0;
+  }
+
+  .trace-card-shell {
+    animation-name: trace-float-one;
+  }
+
+  .trace-receipt-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .trace-receipt-grid > div:nth-child(3) {
+    border-left: 0;
+    padding-left: 0;
+    border-top: 1px solid var(--trace-line);
+  }
+
+  .trace-receipt-grid > div:nth-child(4) {
+    border-top: 1px solid var(--trace-line);
+  }
+
+  .trace-detail-steps li {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .trace-proof {
+    border-top: 2px solid var(--accent);
+    border-left: 0;
+  }
+
+  .trace-address-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .trace-footer {
+    align-items: flex-start;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1.25rem 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .trace-card-shell {
+    animation: none;
+  }
+
+  .trace-card {
+    transition: none;
+  }
+}

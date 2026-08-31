@@ -6,9 +6,9 @@ import { LegalPage } from "./LegalPage.tsx";
 import { SponsorIntegrations } from "./SponsorIntegrations.tsx";
 import { pathFromLocation, ROUTES } from "./routes.ts";
 
-const PlaygroundPage = lazy(async () => {
-  const module = await import("./PlaygroundPage.tsx");
-  return { default: module.PlaygroundPage };
+const CapabilityTrace = lazy(async () => {
+  const module = await import("./CapabilityTracePage.tsx");
+  return { default: module.CapabilityTracePage };
 });
 
 export function App() {
@@ -23,7 +23,7 @@ export function App() {
   }, []);
 
   if (path === ROUTES.docs) return <DocsPage />;
-  if (path === ROUTES.playground) return <Suspense fallback={<main className="min-h-[100dvh] bg-background p-10">Loading playground…</main>}><PlaygroundPage /></Suspense>;
+  if (path === ROUTES.playground) return <Suspense fallback={<main className="min-h-[100dvh] bg-background p-10">Loading capability trace…</main>}><CapabilityTrace /></Suspense>;
   if (path === ROUTES.terms) return <LegalPage kind="terms" />;
   if (path === ROUTES.privacy) return <LegalPage kind="privacy" />;
   return <><Hero /><LandingSections /><SponsorIntegrations /></>;

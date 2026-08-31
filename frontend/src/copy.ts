@@ -20,7 +20,7 @@ export const FORBIDDEN_PRIMARY_CTAS = [
 ] as const;
 
 export type HeroCta = {
-  id: "see-how" | "mainnet-proof" | "docs" | "try-capability";
+  id: "see-how" | "mainnet-proof" | "docs" | "capability-trace";
   label: string;
   href: string;
   external: boolean;
@@ -47,8 +47,8 @@ export function getHeroCtas(): readonly HeroCta[] {
       external: false,
     },
     {
-      id: "try-capability",
-      label: "Try a Capability",
+      id: "capability-trace",
+      label: "Capability Trace",
       href: ROUTES.playground,
       external: false,
     },

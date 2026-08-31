@@ -4,7 +4,7 @@ A private STRK20 capability that triggers one approved Starknet action and retur
 
 Live demo: [vocap-protocol.vercel.app](https://vocap-protocol.vercel.app) · Video: not available yet · [Docs](https://vocap-protocol.vercel.app/docs) · [Security](SECURITY.md) · Submission: not linked yet
 
-The browser frontend ships the public landing page, official Docs, Capability Playground, Terms, and Privacy routes. This is the current product flow:
+The browser frontend ships the public landing page, official Docs, Capability Trace, Terms, and Privacy routes. This is the current product flow:
 
 ```text
 private STRK20 note
@@ -79,7 +79,7 @@ The RC2 client suite passed 259 tests across 28 files. The live prover and disco
 
 The public browser frontend is live at [vocap-protocol.vercel.app](https://vocap-protocol.vercel.app). The fastest judge path is:
 
-1. Open the [live frontend](https://vocap-protocol.vercel.app) and read the [official Docs](https://vocap-protocol.vercel.app/docs).
+1. Open the [live demo](https://vocap-protocol.vercel.app) and read the [official Docs](https://vocap-protocol.vercel.app/docs).
 2. Open [`strk20.json`](strk20.json) and follow any of the three Mainnet proof transactions in the next section.
 3. Run `snforge test` in `contracts/` to see the policy and failure-path suite.
 4. Run `corepack pnpm test` in `backend/` to see the indexer and wallet-boundary tests.
@@ -90,7 +90,7 @@ The complete reproducible commands are in [Run locally](#run-locally).
 
 ## Product / Demo
 
-The browser frontend is live at [vocap-protocol.vercel.app](https://vocap-protocol.vercel.app) and includes the landing, Docs, Capability Playground, Terms, and Privacy routes. The wallet-funded Sepolia write gate is still outstanding, so the public site does not claim a completed browser transaction:
+The browser frontend is live at [vocap-protocol.vercel.app](https://vocap-protocol.vercel.app) and includes the landing, Docs, Capability Trace, Terms, and Privacy routes. The wallet-funded Sepolia write gate is still outstanding, so the public site does not claim a completed browser transaction:
 
 | Surface | Status |
 | --- | --- |
@@ -174,7 +174,7 @@ The three qualifying Mainnet Router transactions are:
 2. [`0x290d3683e674714a79676be0fc13819fc410e0b7e3abb2551529e28a52f83e0`](https://starkscan.co/tx/0x290d3683e674714a79676be0fc13819fc410e0b7e3abb2551529e28a52f83e0)
 3. [`0xd4be56bfd8b0402e150ced5ee7f8b9c912722f9e4e940d1cc1eda7ee2098d3`](https://starkscan.co/tx/0xd4be56bfd8b0402e150ced5ee7f8b9c912722f9e4e940d1cc1eda7ee2098d3)
 
-Each receipt is `SUCCEEDED` and `ACCEPTED_ON_L2`. The proof hashes and both deployed addresses are also recorded in [`strk20.json`](strk20.json).
+The current read-only receipt checks report `SUCCEEDED` and `ACCEPTED_ON_L1` for all three transactions. The proof hashes and both deployed addresses are also recorded in [`strk20.json`](strk20.json).
 
 ## Evidence
 
@@ -212,7 +212,7 @@ Each receipt is `SUCCEEDED` and `ACCEPTED_ON_L2`. The proof hashes and both depl
 ```text
 contracts/                         Cairo Router, target, and Starknet Foundry tests
 backend/                           TypeScript indexer, persistence, health, and wallet boundary
-frontend/                          Vite frontend with landing, Docs, Playground, and legal routes
+frontend/                          Vite frontend with landing, Docs, Capability Trace, and legal routes
 packages/vocap-client/             Browser-safe npm client for the wallet and public API boundary
 .github/workflows/                 Protected Mainnet indexer workflow
 render.yaml                        Supervised Sepolia deployment blueprint
