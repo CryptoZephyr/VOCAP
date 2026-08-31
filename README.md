@@ -2,7 +2,7 @@
 
 A private STRK20 capability that triggers one approved Starknet action and returns the same value to a fresh private note.
 
-Live demo: [vocap-protocol.vercel.app](https://vocap-protocol.vercel.app) · Video: not available yet · [Docs](https://vocap-protocol.vercel.app/docs) · [Security](SECURITY.md) · Submission: not linked yet
+Live demo: [vocap-protocol.vercel.app](https://vocap-protocol.vercel.app) · Video: [YouTube Demo](https://youtu.be/MDVseyfmYD8?si=0YqOKhIDliBYo-_v) · [Docs](https://vocap-protocol.vercel.app/docs) · [Security](SECURITY.md) · Submission: not linked yet
 
 The browser frontend ships the public landing page, official Docs, Capability Trace, Terms, and Privacy routes. This is the current product flow:
 
@@ -99,7 +99,7 @@ The browser frontend is live at [vocap-protocol.vercel.app](https://vocap-protoc
 | Sepolia indexer health | [`vocap-sepolia-indexer.onrender.com/healthz`](https://vocap-sepolia-indexer.onrender.com/healthz), live check returned HTTP `200` with `status: ok` |
 | Vercel production | [`vocap-protocol.vercel.app`](https://vocap-protocol.vercel.app), deployed from `main` at commit `b70b4e7` |
 | Browser frontend | Full frontend source in [`frontend/`](frontend/); serve locally with `corepack pnpm dev` |
-| Demo video | Not available yet |
+| Demo video | [YouTube Demo](https://youtu.be/MDVseyfmYD8?si=0YqOKhIDliBYo-_v) |
 
 ## Architecture
 

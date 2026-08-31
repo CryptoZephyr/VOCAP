@@ -7,5 +7,7 @@
   "contracts": [
     "0x6048ed36607367ea5ae050c745d47006214ecf66fdbf173d01eba96ec5d780a",
     "0x74637f577350898c64835c88216df3030050828c723c6987a3d97d6d4eb986b"
-  ]
+  ],
+  "demo_video": "https://youtu.be/MDVseyfmYD8?si=0YqOKhIDliBYo-_v",
+  "demo_url": "https://vocap-protocol.vercel.app"
 }
