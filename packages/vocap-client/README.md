@@ -1,6 +1,6 @@
-# @cryptozephyr/vocap-client
+# vocap-client
 
-`@cryptozephyr/vocap-client` is the browser-safe integration boundary for VOCAP. It keeps
+`vocap-client` is the browser-safe integration boundary for VOCAP. It keeps
 private note discovery and proof building in the official Starknet Privacy SDK,
 then validates the resulting `apply_actions` call before handing it to a
 connected Starknet wallet.
@@ -13,7 +13,7 @@ a private key, viewing key, note witness, or proof-signing secret.
 After the package is published to npm:
 
 ```bash
-npm install @cryptozephyr/vocap-client@0.1.0 starknet@10.5.0
+npm install vocap-client@0.1.0 starknet@10.5.0
 ```
 
 The official `PRIVACY-0.14.3-RC.2` SDK is currently distributed from the
@@ -36,7 +36,7 @@ Create one client from the reviewed deployment values. Pass the connected
 wallet account and the `callAndProof` result returned by the pinned RC2 SDK.
 
 ```ts
-import { createVocapClient } from "@vocap/client";
+import { createVocapClient } from "vocap-client";
 
 const vocap = createVocapClient({
   network: "sepolia",

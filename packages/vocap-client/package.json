@@ -1,5 +1,5 @@
 {
-  "name": "@cryptozephyr/vocap-client",
+  "name": "vocap-client",
   "version": "0.1.0",
   "description": "Browser-safe helpers for integrating VOCAP private STRK20 actions with a user-controlled Starknet wallet.",
   "type": "module",

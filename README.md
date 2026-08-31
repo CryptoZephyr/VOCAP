@@ -148,7 +148,7 @@ The write path belongs to the user-controlled client, wallet, and privacy pool. 
 | PostgreSQL / Neon Free | Stores policies, executions, lifecycle rows, and sync cursors | Provides a replayable projection without custody of private material |
 | GitHub Actions | Runs bounded Mainnet catch-up jobs on a schedule | Supports a low-cost delayed indexer with separate migration and runtime roles |
 | Render | Hosts the supervised Sepolia indexer and health endpoint | Provides a simple testnet deployment path without being used as Mainnet write infrastructure |
-| [`@cryptozephyr/vocap-client`](https://www.npmjs.com/package/@cryptozephyr/vocap-client) | Packages the validated Router call, wallet submission, and public projection API boundary | Gives integrating apps a small npm surface without bundling private keys, viewing keys, or the pinned privacy SDK |
+| [`vocap-client`](https://www.npmjs.com/package/vocap-client) | Packages the validated Router call, wallet submission, and public projection API boundary | Gives integrating apps a small npm surface without bundling private keys, viewing keys, or the pinned privacy SDK |
 
 ## What's running
 
@@ -255,7 +255,7 @@ Running the indexer requires a migrated PostgreSQL schema, an explicit Starknet 
 
 ### npm client
 
-The published browser-safe client is in [`packages/vocap-client/`](packages/vocap-client/) and available on npm as [`@cryptozephyr/vocap-client`](https://www.npmjs.com/package/@cryptozephyr/vocap-client) version `0.1.0`. It wraps the validated Router and wallet boundary. The integrating app still supplies the verified `PRIVACY-0.14.3-RC.2` SDK release, so the package cannot silently change the proof revision.
+The published browser-safe client is in [`packages/vocap-client/`](packages/vocap-client/) and available on npm as [`vocap-client`](https://www.npmjs.com/package/vocap-client) version `0.1.0`. It wraps the validated Router and wallet boundary. The integrating app still supplies the verified `PRIVACY-0.14.3-RC.2` SDK release, so the package cannot silently change the proof revision.
 
 ```text
 cd /mnt/c/Users/<windows-user>/Desktop/VOCAP/packages/vocap-client
@@ -264,7 +264,7 @@ npm test
 npm pack --dry-run
 ```
 
-An integrating app can install the client with `npm install @cryptozephyr/vocap-client@0.1.0 starknet@10.5.0`. The package README contains the browser quickstart and the public projection API examples.
+An integrating app can install the client with `npm install vocap-client@0.1.0 starknet@10.5.0`. The package README contains the browser quickstart and the public projection API examples.
 
 ## Limitations
 
