@@ -1,6 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { DocsPage } from "../src/DocsPage.tsx";
+import { DOCS_PAGES } from "../src/docs/DocsContent.tsx";
 import { LandingSections } from "../src/LandingSections.tsx";
 import { LegalPage } from "../src/LegalPage.tsx";
 import { SponsorIntegrations } from "../src/SponsorIntegrations.tsx";
@@ -69,21 +70,23 @@ describe("sponsor integrations", () => {
 });
 
 describe("developer documentation", () => {
-  it("documents the current RC2 wallet flow and backend boundary", () => {
-    const html = renderToStaticMarkup(<DocsPage />);
+  it("provides stable, complete pages for the current V1 flow", () => {
+    const shell = renderToStaticMarkup(<DocsPage />);
+    const pages = Object.values(DOCS_PAGES).map((Page) => renderToStaticMarkup(<Page />)).join("");
+    const html = shell + pages;
 
     for (const phrase of [
-      "Official VOCAP documentation",
+      "Developer docs",
       "PRIVACY-0.14.3-RC.2",
       "vocap-client@0.1.0",
       "createVocapClient",
       "submitPrivateResult",
-      "Add VOCAP to your app",
-      "What the client handles",
-      "The VOCAP client never asks for them.",
+      "Official client",
+      "Responsibility map",
+      "It never signs or receives viewing keys.",
       "PolicyExecuted",
-      "The backend indexes finalized public receipts",
-      "V1 target calldata stays empty",
+      "Indexes finalized public receipts",
+      "V1 target calldata is empty",
       "VOCAP is open source under the MIT License.",
     ]) {
       expect(html).toContain(phrase);
@@ -93,8 +96,9 @@ describe("developer documentation", () => {
     expect(html).not.toContain("CapabilityPolicy");
     expect(html).not.toContain("npmjs.com");
     expect(html).not.toContain("@cryptozephyr");
-    expect(html).toContain('href="https://github.com/CryptoZephyr/VOCAP"');
-    expect(html).toContain('href="#quickstart"');
+    expect(shell).toContain('href="https://github.com/CryptoZephyr/VOCAP"');
+    expect(shell).toContain('href="/docs/concepts"');
+    expect(shell).toContain('href="#quickstart"');
     expect(html).toContain("POST /api/v1/transactions");
   });
 });
