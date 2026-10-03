@@ -9,6 +9,8 @@ import { FORBIDDEN_PRIMARY_CTAS, getHeroCtas, HEADLINE, SUPPORTING } from "../sr
 import { Hero } from "../src/Hero.tsx";
 import { playgroundHref } from "../src/routes.ts";
 
+const APPROVED_LOGO_SHA256 = "419f15cf3a2b3ad02a23ddd0b71bad9cc8df4d15891f6a2aa2f74aaaf3d4f1ad";
+
 const frontendRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 function sha256(bytes: Buffer): string {
@@ -82,16 +84,11 @@ describe("atmospheric hero", () => {
   it("ships the approved VOCAP logo as-is and references it from the hero", () => {
     const html = renderHero();
     const shippedPath = join(frontendRoot, "public", "vocap-logo.png");
-    const approvedPath = join(frontendRoot, "..", "VOCAP_logo.png");
 
     expect(existsSync(shippedPath)).toBe(true);
     expect(html).toContain(`src="${LOGO_PUBLIC_PATH}"`);
     expect(LOGO_PUBLIC_PATH).toBe("/vocap-logo.png");
 
-    if (!existsSync(approvedPath)) {
-      throw new Error("approved VOCAP_logo.png missing; cannot verify byte identity");
-    }
-
-    expect(sha256(readFileSync(shippedPath))).toBe(sha256(readFileSync(approvedPath)));
+    expect(sha256(readFileSync(shippedPath))).toBe(APPROVED_LOGO_SHA256);
   });
 });
