@@ -27,7 +27,7 @@ export class StarknetChainReader implements ChainReader {
   private readonly retryDelayMs: number;
 
   public constructor(rpcUrl: string, options: { retries?: number; retryDelayMs?: number } = {}) {
-    this.provider = new RpcProvider({ nodeUrl: rpcUrl, batch: 0 });
+    this.provider = new RpcProvider({ nodeUrl: rpcUrl, batch: false });
     this.retries = options.retries ?? 3;
     this.retryDelayMs = options.retryDelayMs ?? 250;
   }
